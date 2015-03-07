@@ -54,6 +54,11 @@ describe("query-to-mongodb", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {field: {"$nin": ["a","b"]}})
         })
+        it("should ignore criteria", function () {
+            var results = q2m(querystring.parse("field=value&envelope=true"), { ignore: ['envelope']})
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: "value"})
+        })
     })
 
     describe(".options", function () {
@@ -71,6 +76,11 @@ describe("query-to-mongodb", function () {
             var results = q2m(querystring.parse("sort=a,+b,-c"))
             assert.ok(results.options)
             assert.deepEqual(results.options, {sort: {a:1, b:1, c:-1}})
+        })
+        it("should limit queries", function () {
+            var results = q2m(querystring.parse("limit=100"), {maxLimit: 50})
+            assert.ok(results.options)
+            assert.deepEqual(results.options, {limit: 50})
         })
     })
 })

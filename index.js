@@ -1,5 +1,6 @@
 var querystring = require('querystring')
 
+
 // Convert comma separate list to a mongo projection.
 // for example f('field1,field2,field3') -> {field1:true,field2:true,field3:true}
 function fieldsToMongo(fields) {
@@ -71,8 +72,9 @@ function comparisonToMongo(key, value) {
 
 // Convert query parameters to a mongo query criteria.
 // for example {field1:"red","field2>2":""} becomes {field1:"red",field2:{$gt:2}}
-function queryCriteriaToMongo(query) {
+function queryCriteriaToMongo(query, options) {
     var hash = {}, c, ignore = ['fields', 'sort', 'offset', 'limit']
+    if (options.ignore) ignore = ignore.concat(options.ignore)
     for (var key in query) {
         if (query.hasOwnProperty(key) && ignore.indexOf(key) == -1) {
             c = comparisonToMongo(key, query[key])
@@ -86,19 +88,33 @@ function queryCriteriaToMongo(query) {
 
 // Convert query parameters to a mongo query options.
 // for example {fields:'a,b',offset:8,limit:16} becomes {fields:{a:true,b:true},skip:8,limit:16}
-function queryOptionsToMongo(query) {
-    var hash = {}, fields = fieldsToMongo(query.fields), sort = sortToMongo(query.sort)
-    if (query.offset) hash.skip = Number(query.offset)
-    if (query.limit) hash.limit = Number(query.limit)
+function queryOptionsToMongo(query, options) {
+    var hash = {},
+        fields = fieldsToMongo(query.fields),
+        sort = sortToMongo(query.sort),
+        maxLimit = options.maxLimit || 9007199254740992,
+        limit = options.maxLimit || 0
+
     if (fields) hash.fields = fields
     if (sort) hash.sort = sort
+
+    if (query.offset) hash.skip = Number(query.offset)
+    if (query.limit) limit = Math.min(Number(query.limit), maxLimit)
+    if (limit) {
+        hash.limit = limit
+    } else if (options.maxLimit) {
+        hash.limit = maxLimit
+    }
+
     return hash
 }
 
-module.exports = function(query, limit) {
+module.exports = function(query, options) {
+    options = options || {}
+
     return {
-        criteria: queryCriteriaToMongo(query),
-        options: queryOptionsToMongo(query),
+        criteria: queryCriteriaToMongo(query, options),
+        options: queryOptionsToMongo(query, options),
 
         links: function(url, totalCount) {
             var offset = this.options.skip || 0

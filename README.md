@@ -19,6 +19,23 @@ For example, a query such as: `field1=john&field2>10&fields=field1,field2&sort=f
 The format of the arguments was inspired by item #7 in this article about best practices for RESTful apis:
 http://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/.
 
+## Install
+```
+$ npm install query-to-monogdb
+```
+
+### queryToMongoDb(query, options)
+Convert output of querystring.parse to a mongo query.
+```
+var queryToMongoDb = require('query-to-mongodb')
+var query = 'name=john&age>13&limit=10'
+querytoMongoDb(querystring.parse(query)) //=> {criteria: {field1: "john", age: {"$gt": 13}}, options: {limit: 10}}
+```
+
+#### options:
+* **maxLimit** The maximum limit (default is none)
+* **ignore** List of criteria to ignore in addition to the options ("fields", "sort", "offset", "limit")
+
 ## Usage
 The module is intended for use by express routes, and so takes the results of querystring.parse as input:
 ```
