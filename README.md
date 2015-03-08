@@ -95,15 +95,13 @@ router.get('/api/v1/mycollection', function(req, res, next) {
 }
 ```
 
-
-
-## Field selection
+### Field selection
 The _fields_ argument is a comma separated list of field names to include in the results. For example `fields=name,age` results in a _option.fields_ value of `{'name':true,'age':true}`. If no fields are specified then _option.fields_ is null, returning full documents as results.
 
-## Sorting
+### Sorting
 The _sort_ argument is a comma separated list of fields to sort the results by. For example `sort=name,-age` results in a _option.sort_ value of `{'name':1,'age':-1}`. If no sort is specified then _option.sort_ is null and the results are not sorted.
 
-## Paging
+### Paging
 The _offset_ and _limit_ arguments indicate the subset of the full results to return. By default, the full results are returned. If _limit_ is set and the total count is obtained for the query criteria, pagination links can be generated:
 ```
 collection.count(q.query, function(err, count) {
@@ -121,7 +119,7 @@ For example, if _offset_ was 20, _limit_ was 10, and _count_ was 95, the followi
 ```
 These pagination links can be used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
 
-## Filtering
+### Filtering
 Any query parameters other then _fields_, _sort_, _offset_, and _limit_ are interpreted as query criteria. For example `name=john&age>21` results in a _criteria_ value of:
 ```
 {
@@ -137,7 +135,7 @@ Any query parameters other then _fields_, _sort_, _offset_, and _limit_ are inte
 * Multiple not-equals comparisons are merged into a `$nin` operator. For example, `id!=a&id!=b` yields `{id:{$nin:['a','b']}}`.
 * Comma separated values in equals or not-equals yeild an `$in` or `$nin` operator. For example, `id=a,b` yields `{id:{$in:['a','b']}}`.
 
-## A note on embedded documents
+### A note on embedded documents
 Comparisons on embedded documents should use mongo's [dot notation](http://docs.mongodb.org/manual/reference/glossary/#term-dot-notation) instead of express's 'extended' [query parser](https://www.npmjs.com/package/qs). Use `foo.bar=value` instead of `foo[bar]=value`.
 
 Although exact matches are handled for either method, comparisons (such as `foo[bar]!=value`) are not supported because the 'extended' parser expects an equals sign after the nested object reference; if it's not an equals the remainder is discarded.
