@@ -34,43 +34,43 @@ $ npm install query-to-monogdb
 ## API
 ### queryToMongoDb(query, options)
 Convert the query portion of a url to a mongo query.
-```
+```javascript
 var queryToMongoDb = require('query-to-mongodb')
 var query = queryToMongoDb('name=john&age>21&limit=10')
 console.log(query)
 ```
-yields:
-```
+```json
 { criteria: { name: 'john', age: { '$gt': 21 }, limit: 10 },
   options: { limit: 10 },
   links: [Function] }
 ```
-
-#### query:
-The 'query string' portion of a URL (either `url.parse(urlStr).search` or `url.parse(urlStr, true).query`).
 
 #### options:
 * **maxLimit** The maximum limit (default is none)
 * **ignore** List of criteria to ignore in addition to those used for query options ("fields", "sort", "offset", "limit")
 * **parser** Query parser to use instead of _querystring_. Must implement `parse(string)` and `stringify(obj)`.
 
-### links(url, totalCount)
-With a base url and totalCount, relative links can be calculated and used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
-```
+#### returns:
+* **criteria** Mongo query criteria.
+* **options** Mongo query options.
+* **links** Function to calculate relative links.
+
+##### links(url, totalCount)
+Calculate relative links given the base url and totalCount. Can be used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
+```javascript
 var queryToMongoDb = require('query-to-mongodb')
 var query = queryToMongoDb('name=john&age>21&offset=20&limit=10')
 console.log(query.links('http://localhost/api/v1/users', 100))
 ```
-yields:
-```
+```json
 { prev: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=10&limit=10',
   first: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=0&limit=10',
   next: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=30&limit=10',
   last: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=90&limit=10' }
 ```
 
-## Usage Guide
-The module is intended for use by express routes, and so takes the request query as input:
+## Use
+The module is intended for use by express routes, and so takes a parsed query as input:
 ```
 var querystring = require('querystring');
 var q2m = require('query-to-mongodb');
