@@ -42,7 +42,7 @@ querytoMongoDb(querystring.parse(query)) //=> { criteria: { name: "john", age: {
 
 #### options:
 * **maxLimit** The maximum limit (default is none)
-* **ignore** List of criteria to ignore in addition to the options ("fields", "sort", "offset", "limit")
+* **ignore** List of criteria to ignore in addition to those used for query options ("fields", "sort", "offset", "limit")
 
 ## Usage
 The module is intended for use by express routes, and so takes the results of querystring.parse or qs.parse as input:
