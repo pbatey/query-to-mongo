@@ -26,12 +26,14 @@ For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&o
 ```
 The resulting query object can then be used as parameters for a mongodb query:
 ```javascript
-var mongoskin = require('mongoskin');
-var db = mongoskin.db('mongodb://localhost:27027/mydb');
-var collection = db.collection('mycollection');
-collection.find(q.criteria, q.options).toArray(function(err, results) {
+var q2m = require('query-to-mongodb')
+var mongoskin = require('mongoskin')
+var db = mongoskin.db('mongodb://localhost:27027/mydb')
+var collection = db.collection('mycollection')
+var query = q2m('name=john&age>13&limit=20')
+collection.find(query.criteria, query.options).toArray(function(err, results) {
   ...
-});
+})
 ```
 
 The format of the arguments was inspired by item #7 in [this article](http://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/) about best practices for RESTful APIs.
@@ -82,10 +84,10 @@ console.log(query.links('http://localhost/api/v1/users', 100))
 ## Use
 The module is intended for use by express routes, and so takes a parsed query as input:
 ```
-var querystring = require('querystring');
-var q2m = require('query-to-mongodb');
-var query = 'name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10';
-var q = q2m(querystring.parse(query));
+var querystring = require('querystring')
+var q2m = require('query-to-mongodb')
+var query = 'name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10'
+var q = q2m(querystring.parse(query))
 ```
 This makes it easy to use in an express route:
 ```
@@ -105,7 +107,7 @@ The _sort_ argument is a comma separated list of fields to sort the results by. 
 The _offset_ and _limit_ arguments indicate the subset of the full results to return. By default, the full results are returned. If _limit_ is set and the total count is obtained for the query criteria, pagination links can be generated:
 ```
 collection.count(q.query, function(err, count) {
-  var links = q.links('http://localhost/api/v1/mycollection', count);
+  var links = q.links('http://localhost/api/v1/mycollection', count)
 }
 ```
 For example, if _offset_ was 20, _limit_ was 10, and _count_ was 95, the following links would be generated:
