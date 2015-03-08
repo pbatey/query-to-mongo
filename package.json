@@ -11,8 +11,7 @@
   "license": "MIT License",
   "devDependencies": {
     "chai": "^2.1.0",
-    "mocha": "^2.1.0",
-    "qs": "^2.3.3"
+    "mocha": "^2.1.0"
   },
   "scripts": {
     "test": "node_modules/mocha/bin/mocha test"

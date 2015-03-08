@@ -1,6 +1,5 @@
 var querystring = require('querystring')
 
-
 // Convert comma separate list to a mongo projection.
 // for example f('field1,field2,field3') -> {field1:true,field2:true,field3:true}
 function fieldsToMongo(fields) {
@@ -135,6 +134,9 @@ module.exports = function(query, options) {
         options.ignore = (typeof options.ignore === 'string') ? [options.ignore] : options.ignore
     }
     options.ignore.concat(['fields', 'sort', 'offset', 'limit'])
+    if (!options.parser) options.parser = querystring
+
+    if (typeof query === 'string') query = options.parser.parse(query)
 
     return {
         criteria: queryCriteriaToMongo(query, options),
@@ -148,20 +150,22 @@ module.exports = function(query, options) {
 
             if (!limit) return null
 
+            options = options || {}
+
             if (offset > 0) {
                 query.offset = Math.max(offset - limit, 0)
-                links['prev'] = url + '?' + querystring.stringify(query)
+                links['prev'] = url + '?' + options.parser.stringify(query)
                 query.offset = 0
-                links['first'] = url + '?' + querystring.stringify(query)
+                links['first'] = url + '?' + options.parser.stringify(query)
             }
             if (offset + limit < totalCount) {
                 last.pages = Math.ceil(totalCount / limit)
                 last.offset = (last.pages - 1) * limit
 
                 query.offset = Math.min(offset + limit, last.offset)
-                links['next'] = url  + '?' + querystring.stringify(query)
+                links['next'] = url  + '?' + options.parser.stringify(query)
                 query.offset = last.offset
-                links['last'] = url  + '?' + querystring.stringify(query)
+                links['last'] = url  + '?' + options.parser.stringify(query)
             }
             return links
         }

@@ -1,10 +1,9 @@
 var assert = require("chai").assert
 var q2m = require("../index")
-var querystring = require("querystring")
 
-describe("query-to-mongodb", function () {
+describe("query-to-mongodb(query).links =>", function () {
     describe("#links", function () {
-        var links = q2m(querystring.parse("offset=20&limit=10")).links('http://localhost', 95)
+        var links = q2m("offset=20&limit=10").links('http://localhost', 95)
         it("should create first link", function () {
             assert.equal(links.first, "http://localhost?offset=0&limit=10")
         })
@@ -19,7 +18,7 @@ describe("query-to-mongodb", function () {
         })
 
         describe("with no pages", function () {
-            var links = q2m(querystring.parse("offset=0&limit=100")).links('http://localhost', 95)
+            var links = q2m("offset=0&limit=100").links('http://localhost', 95)
             it("should not create links", function () {
                 assert.notOk(links.first)
                 assert.notOk(links.last)
@@ -28,7 +27,7 @@ describe("query-to-mongodb", function () {
             })
         })
         describe("when on first page", function () {
-            var links = q2m(querystring.parse("offset=0&limit=10")).links('http://localhost', 95)
+            var links = q2m("offset=0&limit=10").links('http://localhost', 95)
             it("should not create prev link", function () {
                 assert.notOk(links.prev)
             })
@@ -43,7 +42,7 @@ describe("query-to-mongodb", function () {
             })
         })
         describe("when on last page", function () {
-            var links = q2m(querystring.parse("offset=90&limit=10")).links('http://localhost', 95)
+            var links = q2m("offset=90&limit=10").links('http://localhost', 95)
             it("should not create next link", function () {
                 assert.notOk(links.next)
             })
