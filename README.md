@@ -1,16 +1,24 @@
 # query-to-mongodb
 Node.js package to convert query parameters into a mongodb query criteria and options
 
-For example, a query such as: `field1=john&field2>10&fields=field1,field2&sort=field1,-field2&offset=10&limit=10` becomes the following hash:
+For example, a query such as: `name=john&age>13&fields=name,age&sort=name,-age&offset=10&limit=10` becomes the following hash:
 ```
 {
   criteria: {
-    field1: 'john',
-    field2: { $gt: 10 }
+    name: 'john',
+    age: {
+      $gt: 13
+    }
   },
   options: {
-    fields: {field1:true,field2:true},
-    sort: {field1:1,field2:-1},
+    fields: {
+      name: true,
+      age: true
+    },
+    sort: {
+      name: 1,
+      age: -1
+    },
     offset: 10,
     limit: 10
   }
@@ -29,7 +37,7 @@ Convert output of querystring.parse to a mongo query.
 ```
 var queryToMongoDb = require('query-to-mongodb')
 var query = 'name=john&age>13&limit=10'
-querytoMongoDb(querystring.parse(query)) //=> {criteria: {field1: "john", age: {"$gt": 13}}, options: {limit: 10}}
+querytoMongoDb(querystring.parse(query)) //=> { criteria: { name: "john", age: { "$gt": 13 } }, options: { limit: 10 } }
 ```
 
 #### options:
@@ -37,11 +45,11 @@ querytoMongoDb(querystring.parse(query)) //=> {criteria: {field1: "john", age: {
 * **ignore** List of criteria to ignore in addition to the options ("fields", "sort", "offset", "limit")
 
 ## Usage
-The module is intended for use by express routes, and so takes the results of querystring.parse as input:
+The module is intended for use by express routes, and so takes the results of querystring.parse or qs.parse as input:
 ```
 var querystring = require('querystring');
 var q2m = require('query-to-mongodb');
-var query = 'field1=john&field2>10&fields=field1,field2&sort=field1,-field2&offset=10&limit=10';
+var query = 'name=john&age>13&fields=field1,field2&sort=field1,-field2&offset=10&limit=10';
 var q = q2m(querystring.parse(query));
 ```
 This makes it easy to use in an express route:
@@ -101,6 +109,11 @@ Any query parameters other then _fields_, _sort_, _offset_, and _limit_ are inte
 * Multiple equals comparisons are merged into a `$in` operator. For example, `id=a&id=b` yields `{id:{$in:['a','b']}}`.
 * Multiple not-equals comparisons are merged into a `$nin` operator. For example, `id!=a&id!=b` yields `{id:{$nin:['a','b']}}`.
 * Comma separated values in equals or not-equals yeild an `$in` or `$nin` operator. For example, `id=a,b` yields `{id:{$in:['a','b']}}`.
+
+## A note on embedded documents
+Comparisons on embedded documents should use mongo's [dot notation](http://docs.mongodb.org/manual/reference/glossary/#term-dot-notation) instead of express's 'extended' [query parser](https://www.npmjs.com/package/qs). Use `foo.bar=value` instead of `foo[bar]=value`.
+
+Although exact matches are handled for either method, comparisons (such as `foo[bar]!=value`) are not supported because the 'extended' parser expects an equals sign after the nested object reference; if it's not an equals the remainder is discarded.
 
 ## Todo
 * Add support for `$exists`. Arguments w/o a value (ie., `field1&field2=10`) would yield `{'field1':{$exists:true},...}`; prefixed with not(!) (ie., `!field1&field2=10`) would yield `{'field1': {$exists: false},...}`.

@@ -2,7 +2,7 @@ var assert = require("chai").assert
 var q2m = require("../index")
 var querystring = require("querystring")
 
-describe("query-to-mongodb", function () {
+describe("querystring.parse =>", function () {
     describe(".criteria", function () {
         it("should create criteria", function () {
             var results = q2m(querystring.parse("field=value"))

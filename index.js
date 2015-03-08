@@ -33,7 +33,9 @@ function typedValue(value) {
 
 // Convert a key/value pair split at an equals sign into a mongo comparison.
 // Converts value Strings to Numbers or Booleans when possible.
-// for example: f('key', 'value') -> {key:'value'}; f('key>','value') -> {key:{$gte:'value'}}
+// for example:
+// + f('key','value') => {key:'key',value:'value'}
+// + f('key>','value') => {key:'key',value:{$gte:'value'}}
 function comparisonToMongo(key, value) {
     var join = (value == '') ? key : key.concat('=', value)
     var parts = join.match(/([^><!=]+)([><]=?|!?=)(.+)/)
@@ -65,21 +67,36 @@ function comparisonToMongo(key, value) {
         else if (op == '<=') value = { '$lte': value}
     }
 
-    hash['key'] = key
-    hash[key] = value
+    hash.key = key
+    hash.value = value
     return hash
+}
+
+// Checks for keys that are ordinal positions, such as {'0':'one','1':'two','2':'three'}
+function hasOrdinalKeys(obj) {
+    var c = 0
+    for (var key in obj) {
+        if (Number(key) !== c++) return false
+    }
+    return true
 }
 
 // Convert query parameters to a mongo query criteria.
 // for example {field1:"red","field2>2":""} becomes {field1:"red",field2:{$gt:2}}
 function queryCriteriaToMongo(query, options) {
-    var hash = {}, c, ignore = ['fields', 'sort', 'offset', 'limit']
-    if (options.ignore) ignore = ignore.concat(options.ignore)
+    var hash = {}, p, v, deep
+    options = options || {}
     for (var key in query) {
-        if (query.hasOwnProperty(key) && ignore.indexOf(key) == -1) {
-            c = comparisonToMongo(key, query[key])
-            if (c) {
-                hash[c.key] = c[c.key]
+        if (query.hasOwnProperty(key) && (!options.ignore || options.ignore.indexOf(key) == -1)) {
+            deep = (typeof query[key] === 'object' && !hasOrdinalKeys(query[key]))
+
+            if (deep) {
+                hash[key] = queryCriteriaToMongo(query[key])
+            } else {
+                p = comparisonToMongo(key, query[key])
+                if (p) {
+                    hash[p.key] = p.value
+                }
             }
         }
     }
@@ -111,6 +128,13 @@ function queryOptionsToMongo(query, options) {
 
 module.exports = function(query, options) {
     options = options || {}
+
+    if (!options.ignore) {
+        options.ignore = []
+    } else {
+        options.ignore = (typeof options.ignore === 'string') ? [options.ignore] : options.ignore
+    }
+    options.ignore.concat(['fields', 'sort', 'offset', 'limit'])
 
     return {
         criteria: queryCriteriaToMongo(query, options),
