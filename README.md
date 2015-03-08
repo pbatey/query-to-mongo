@@ -24,7 +24,7 @@ For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&o
   }
 }
 ```
-The resulting query object can then be used as parameters for a mongodb query:
+The resulting query object can be used as parameters for a mongodb query:
 ```javascript
 var q2m = require('query-to-mongodb')
 var mongoskin = require('mongoskin')
