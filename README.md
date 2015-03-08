@@ -36,7 +36,7 @@ collection.find(query.criteria, query.options).toArray(function(err, results) {
 })
 ```
 
-The format of the arguments was inspired by item #7 in [this article](http://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/) about best practices for RESTful APIs.
+The format for arguments was inspired by item #7 in [this article](http://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/) about best practices for RESTful APIs.
 
 ## Install
 ```
