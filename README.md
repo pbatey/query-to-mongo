@@ -2,7 +2,7 @@
 Node.js package to convert query parameters into a mongodb query criteria and options
 
 For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10` becomes the following hash:
-```
+```javascript
 {
   criteria: {
     name: 'john',
@@ -24,6 +24,16 @@ For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&o
   }
 }
 ```
+The resulting query object can then be used as parameters for a mongodb query:
+```javascript
+var mongoskin = require('mongoskin');
+var db = mongoskin.db('mongodb://localhost:27027/mydb');
+var collection = db.collection('mycollection');
+collection.find(q.criteria, q.options).toArray(function(err, results) {
+  ...
+});
+```
+
 The format of the arguments was inspired by item #7 in [this article](http://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/) about best practices for RESTful APIs.
 
 ## Install
@@ -39,7 +49,7 @@ var queryToMongoDb = require('query-to-mongodb')
 var query = queryToMongoDb('name=john&age>21&limit=10')
 console.log(query)
 ```
-```json
+```javascript
 { criteria: { name: 'john', age: { '$gt': 21 }, limit: 10 },
   options: { limit: 10 },
   links: [Function] }
@@ -62,7 +72,7 @@ var queryToMongoDb = require('query-to-mongodb')
 var query = queryToMongoDb('name=john&age>21&offset=20&limit=10')
 console.log(query.links('http://localhost/api/v1/users', 100))
 ```
-```json
+```javascript
 { prev: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=10&limit=10',
   first: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=0&limit=10',
   next: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=30&limit=10',
@@ -85,15 +95,7 @@ router.get('/api/v1/mycollection', function(req, res, next) {
 }
 ```
 
-The resulting query object can then be used as parameters for a mongodb query:
-```
-var mongoskin = require('mongoskin');
-var db = mongoskin.db('mongodb://localhost:27027/mydb');
-var collection = db.collection('mycollection');
-collection.find(q.criteria, q.options).toArray(function(err, results) {
-  ...
-});
-```
+
 
 ## Field selection
 The _fields_ argument is a comma separated list of field names to include in the results. For example `fields=name,age` results in a _option.fields_ value of `{'name':true,'age':true}`. If no fields are specified then _option.fields_ is null, returning full documents as results.
