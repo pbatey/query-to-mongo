@@ -6,19 +6,11 @@ For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&o
 {
   criteria: {
     name: 'john',
-    age: {
-      $gt: 21
-    }
+    age: { $gt: 21 }
   },
   options: {
-    fields: {
-      name: true,
-      age: true
-    },
-    sort: {
-      name: 1,
-      age: -1
-    },
+    fields: { name: true, age: true },
+    sort: { name: 1, age: -1 },
     offset: 10,
     limit: 10
   }
@@ -35,8 +27,6 @@ collection.find(query.criteria, query.options).toArray(function(err, results) {
   ...
 })
 ```
-
-The format for arguments was inspired by item #7 in [this article](http://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/) about best practices for RESTful APIs.
 
 ## Install
 ```
@@ -96,6 +86,8 @@ router.get('/api/v1/mycollection', function(req, res, next) {
   ...
 }
 ```
+
+The format for arguments was inspired by item #7 in [this article](http://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/) about best practices for RESTful APIs.
 
 ### Field selection
 The _fields_ argument is a comma separated list of field names to include in the results. For example `fields=name,age` results in a _option.fields_ value of `{'name':true,'age':true}`. If no fields are specified then _option.fields_ is null, returning full documents as results.
