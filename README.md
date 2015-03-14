@@ -28,11 +28,6 @@ collection.find(query.criteria, query.options).toArray(function(err, results) {
 })
 ```
 
-## Install
-```
-$ npm install query-to-monogdb
-```
-
 ## API
 ### queryToMongoDb(query, options)
 Convert the query portion of a url to a mongo query.
