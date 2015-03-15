@@ -120,6 +120,7 @@ Any query parameters other then _fields_, _sort_, _offset_, and _limit_ are inte
 * Supports standard comparison operations (=, !=, >, <, >=, <=).
 * Numeric values, where `Number(value) != NaN`, are compared as numbers (ie., `field=10` yields `{field:10}`).
 * Values of _true_ and _false_ are compared as booleans (ie., `{field:true}`)
+* Values that are [dates](http://www.w3.org/TR/NOTE-datetime) are compared as dates (except for YYYY which matches the number rule).
 * Multiple equals comparisons are merged into a `$in` operator. For example, `id=a&id=b` yields `{id:{$in:['a','b']}}`.
 * Multiple not-equals comparisons are merged into a `$nin` operator. For example, `id!=a&id!=b` yields `{id:{$nin:['a','b']}}`.
 * Comma separated values in equals or not-equals yeild an `$in` or `$nin` operator. For example, `id=a,b` yields `{id:{$in:['a','b']}}`.

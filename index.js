@@ -1,4 +1,5 @@
 var querystring = require('querystring')
+var iso8601 = require('./lib/iso8601-regex')
 
 // Convert comma separate list to a mongo projection.
 // for example f('field1,field2,field3') -> {field1:true,field2:true,field3:true}
@@ -24,10 +25,12 @@ function sortToMongo(sort) {
     return hash
 }
 
-// Convert String to Number or Boolean if possible
+// Convert String to Number, Date, or Boolean if possible
 function typedValue(value) {
     var n = Number(value)
-    return (n && n != NaN) ? n : ((value == 'true') || ((value == 'false') ? false : value))
+    if (n && n != NaN) return n
+    if (iso8601.test(value)) return new Date(value)
+    return (value == 'true') || ((value == 'false') ? false : value)
 }
 
 // Convert a key/value pair split at an equals sign into a mongo comparison.
