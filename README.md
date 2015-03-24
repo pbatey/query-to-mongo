@@ -1,5 +1,5 @@
-# query-to-mongodb
-Node.js package to convert query parameters into a mongodb query criteria and options
+# query-to-mongo
+Node.js package to convert query parameters into a [mongo](https://www.mongodb.org) query criteria and options
 
 For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10` becomes the following hash:
 ```javascript
@@ -16,9 +16,9 @@ For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&o
   }
 }
 ```
-The resulting query object can be used as parameters for a mongodb query:
+The resulting query object can be used as parameters for a mongo collection query:
 ```javascript
-var q2m = require('query-to-mongodb')
+var q2m = require('query-to-mongo')
 var mongoskin = require('mongoskin')
 var db = mongoskin.db('mongodb://localhost:27027/mydb')
 var collection = db.collection('mycollection')
@@ -29,11 +29,11 @@ collection.find(query.criteria, query.options).toArray(function(err, results) {
 ```
 
 ## API
-### queryToMongoDb(query, options)
+### queryToMongo(query, options)
 Convert the query portion of a url to a mongo query.
 ```javascript
-var queryToMongoDb = require('query-to-mongodb')
-var query = queryToMongoDb('name=john&age>21&limit=10')
+var queryToMongo = require('query-to-mongo')
+var query = queryToMongo('name=john&age>21&limit=10')
 console.log(query)
 ```
 ```javascript
@@ -55,8 +55,8 @@ console.log(query)
 ##### links(url, totalCount)
 Calculate relative links given the base url and totalCount. Can be used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
 ```javascript
-var queryToMongoDb = require('query-to-mongodb')
-var query = queryToMongoDb('name=john&age>21&offset=20&limit=10')
+var queryToMongo = require('query-to-mongodb')
+var query = queryToMongo('name=john&age>21&offset=20&limit=10')
 console.log(query.links('http://localhost/api/v1/users', 100))
 ```
 ```javascript
@@ -70,7 +70,7 @@ console.log(query.links('http://localhost/api/v1/users', 100))
 The module is intended for use by express routes, and so takes a parsed query as input:
 ```
 var querystring = require('querystring')
-var q2m = require('query-to-mongodb')
+var q2m = require('query-to-mongo')
 var query = 'name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10'
 var q = q2m(querystring.parse(query))
 ```
