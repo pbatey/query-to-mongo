@@ -136,7 +136,7 @@ module.exports = function(query, options) {
     } else {
         options.ignore = (typeof options.ignore === 'string') ? [options.ignore] : options.ignore
     }
-    options.ignore.concat(['fields', 'sort', 'offset', 'limit'])
+    options.ignore = options.ignore.concat(['fields', 'sort', 'skip', 'limit'])
     if (!options.parser) options.parser = querystring
 
     if (typeof query === 'string') query = options.parser.parse(query)
