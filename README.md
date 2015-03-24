@@ -37,7 +37,7 @@ var query = queryToMongo('name=john&age>21&limit=10')
 console.log(query)
 ```
 ```javascript
-{ criteria: { name: 'john', age: { '$gt': 21 }, limit: 10 },
+{ criteria: { name: 'john', age: { '$gt': 21 } },
   options: { limit: 10 },
   links: [Function] }
 ```
