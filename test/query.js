@@ -1,7 +1,7 @@
 var assert = require("chai").assert
 var q2m = require("../index")
 
-describe("query-to-mongodb(query) =>", function () {
+describe("query-to-mongo(query) =>", function () {
     describe(".criteria", function () {
         it("should create criteria", function () {
             var results = q2m("field=value")

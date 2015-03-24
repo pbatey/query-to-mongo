@@ -1,7 +1,7 @@
 var assert = require("chai").assert
 var q2m = require("../index")
 
-describe("query-to-mongodb(query).links =>", function () {
+describe("query-to-mongo(query).links =>", function () {
     describe("#links", function () {
         var links = q2m("offset=20&limit=10").links('http://localhost', 95)
         it("should create first link", function () {

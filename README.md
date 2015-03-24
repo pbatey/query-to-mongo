@@ -55,7 +55,7 @@ console.log(query)
 ##### links(url, totalCount)
 Calculate relative links given the base url and totalCount. Can be used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
 ```javascript
-var queryToMongo = require('query-to-mongodb')
+var queryToMongo = require('query-to-mongo')
 var query = queryToMongo('name=john&age>21&offset=20&limit=10')
 console.log(query.links('http://localhost/api/v1/users', 100))
 ```
