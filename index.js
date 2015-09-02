@@ -1,7 +1,7 @@
 var querystring = require('querystring')
 var iso8601 = require('./lib/iso8601-regex')
 
-// Convert comma separate list to a mongo projection.
+// Convert comma separated list to a mongo projection.
 // for example f('field1,field2,field3') -> {field1:true,field2:true,field3:true}
 function fieldsToMongo(fields) {
     if (!fields) return null
@@ -12,7 +12,18 @@ function fieldsToMongo(fields) {
     return hash
 }
 
-// Convert comma separate list to mongo sort options.
+// Convert comma separated list to a mongo projection which specifies fields to omit.
+// for example f('field2') -> {field2:false}
+function omitFieldsToMongo(omitFields) {
+    if (!omitFields) return null
+    var hash = {}
+    omitFields.split(',').forEach(function(omitField) {
+        hash[omitField.trim()] = false
+    })
+    return hash
+}
+
+// Convert comma separated list to mongo sort options.
 // for example f('field1,+field2,-field3') -> {field1:1,field2:1,field3:-1}
 function sortToMongo(sort) {
     if (!sort) return null
@@ -110,11 +121,15 @@ function queryCriteriaToMongo(query, options) {
 function queryOptionsToMongo(query, options) {
     var hash = {},
         fields = fieldsToMongo(query.fields),
+        omitFields = omitFieldsToMongo(query.omit),
         sort = sortToMongo(query.sort),
         maxLimit = options.maxLimit || 9007199254740992,
         limit = options.maxLimit || 0
 
     if (fields) hash.fields = fields
+    // omit intentionally overwrites fields if both have been specified in the query
+    // mongo does not accept mixed true/fals field specifiers for projections
+    if (omitFields) hash.fields = omitFields
     if (sort) hash.sort = sort
 
     if (query.offset) hash.skip = Number(query.offset)
@@ -136,7 +151,7 @@ module.exports = function(query, options) {
     } else {
         options.ignore = (typeof options.ignore === 'string') ? [options.ignore] : options.ignore
     }
-    options.ignore = options.ignore.concat(['fields', 'sort', 'skip', 'limit'])
+    options.ignore = options.ignore.concat(['fields', 'omit', 'sort', 'skip', 'limit'])
     if (!options.parser) options.parser = querystring
 
     if (typeof query === 'string') query = options.parser.parse(query)
