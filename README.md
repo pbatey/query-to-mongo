@@ -22,7 +22,7 @@ For example, a query such as: `name=john&age>21&omit=name&sort=name,-age&offset=
  {
    criteria: {
      name: 'john',
-         age: { $gt: 21 }
+     age: { $gt: 21 }
    },
    options: {
      fields: { name: false },
@@ -105,7 +105,7 @@ The _fields_ argument is a comma separated list of field names to include in the
 
 The _omit_ argument is a comma separated list of field names to exclude in the results. For example `omit=name,age` results in a _option.fields_ value of `{'name':false,'age':false}`. If no fields are specified then _option.fields_ is null, returning full documents as results.
 
-Note that either _fields_ or _omit_ can be used.  If both are specified then _omit_ takes precedence and the _fields_ entry is ignored.  Mongo will not accept a mix true and false fields
+Note that either _fields_ or _omit_ can be used.  If both are specified then _omit_ takes precedence and the _fields_ entry is ignored.  Mongo will not accept a mix of true and false fields
 ### Sorting
 The _sort_ argument is a comma separated list of fields to sort the results by. For example `sort=name,-age` results in a _option.sort_ value of `{'name':1,'age':-1}`. If no sort is specified then _option.sort_ is null and the results are not sorted.
 

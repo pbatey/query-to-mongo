@@ -150,6 +150,11 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.options)
             assert.deepEqual(results.options, {fields: {b:false}})
         })
+        it("should create omit option", function () {
+            var results = q2m("omit=b")
+            assert.ok(results.options)
+            assert.deepEqual(results.options, {fields: {b:false}})
+        })
         it("should create sort option", function () {
             var results = q2m("sort=a,+b,-c")
             assert.ok(results.options)
