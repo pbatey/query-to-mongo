@@ -16,22 +16,6 @@ For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&o
   }
 }
 ```
-The omit query parameter is used to create options: fields to exclude fields.
-For example, a query such as: `name=john&age>21&omit=name&sort=name,-age&offset=10&limit=10` becomes the following hash:
- ```javascript
- {
-   criteria: {
-     name: 'john',
-     age: { $gt: 21 }
-   },
-   options: {
-     fields: { name: false },
-     sort: { name: 1, age: -1 },
-     offset: 10,
-     limit: 10
-   }
- }
-```
 The resulting query object can be used as parameters for a mongo collection query:
 ```javascript
 var q2m = require('query-to-mongo')
@@ -128,7 +112,7 @@ For example, if _offset_ was 20, _limit_ was 10, and _count_ was 95, the followi
 These pagination links can be used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
 
 ### Filtering
-Any query parameters other then _fields_, _sort_, _offset_, and _limit_ are interpreted as query criteria. For example `name=john&age>21` results in a _criteria_ value of:
+Any query parameters other then _fields_, _omit_, _sort_, _offset_, and _limit_ are interpreted as query criteria. For example `name=john&age>21` results in a _criteria_ value of:
 ```
 {
   'name': 'john',
