@@ -127,6 +127,8 @@ function queryOptionsToMongo(query, options) {
         limit = options.maxLimit || 0
 
     if (fields) hash.fields = fields
+    // omit intentionally overwrites fields if both have been specified in the query
+    // mongo does not accept mixed true/fals field specifiers for projections
     if (omitFields) hash.fields = omitFields
     if (sort) hash.sort = sort
 
