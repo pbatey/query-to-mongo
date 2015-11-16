@@ -133,6 +133,14 @@ Comparisons on embedded documents should use mongo's [dot notation](http://docs.
 
 Although exact matches are handled for either method, comparisons (such as `foo[bar]!=value`) are not supported because the 'extended' parser expects an equals sign after the nested object reference; if it's not an equals the remainder is discarded.
 
+## Development
+There's a *test* script listed in package.json that will execute the mocha tests:
+
+```
+npm install
+npm test
+```
+
 ## Todo
 * Add support for `$exists`. Arguments w/o a value (ie., `foo&bar=10`) would yield `{'foo':{$exists:true}, 'bar':...}`; prefixed with not(!) (ie., `!foo&bar=10`) would yield `{'foo': {$exists: false}, 'bar': ...}`.
 * Add support for `$regex`. Values with slashes (field=/pattern/) would result in `{'field':{$regex: /pattern/}}`. Don't forget case-insensitive patterns (/pattern/i).
