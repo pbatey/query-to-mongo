@@ -70,12 +70,15 @@ function comparisonToMongo(key, value) {
         parts[3].split(',').forEach(function(value) {
             array.push(typedValue(value))
         })
+        var regex = array[0].match(/^\/(.*)\/(i?)$/);
         if (array.length > 1) {
             value = {}
             op = (op == '=') ? '$in' : '$nin'
             value[op] = array
         } else if (op == '!=') {
             value = { '$ne': array[0] }
+        } else if (regex) {
+            value = { '$regex': new RegExp(regex[1], regex[2]) };
         } else {
             value = array[0]
         }
