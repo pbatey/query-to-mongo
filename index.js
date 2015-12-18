@@ -151,6 +151,7 @@ function queryOptionsToMongo(query, options) {
 }
 
 module.exports = function(query, options) {
+    query = query || {};
     options = options || {}
 
     if (!options.ignore) {
