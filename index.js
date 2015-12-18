@@ -70,7 +70,7 @@ function comparisonToMongo(key, value) {
         parts[3].split(',').forEach(function(value) {
             array.push(typedValue(value))
         })
-        var regex = array[0].match(/^\/(.*)\/(i?)$/);
+        var regex = value.match(/^\/(.*)\/(i?)$/);
         if (array.length > 1) {
             value = {}
             op = (op == '=') ? '$in' : '$nin'
