@@ -38,7 +38,11 @@ function sortToMongo(sort) {
 
 // Convert String to Number, Date, or Boolean if possible
 function typedValue(value) {
-  if (value === 'true') {
+  var regex = value.match(/^\/(.*)\/(i?)$/);
+
+  if (regex) {
+    return new RegExp(regex[1], regex[2]);
+  } else if (value === 'true') {
     return true;
   } else if (value === 'false') {
     return false;
@@ -70,15 +74,12 @@ function comparisonToMongo(key, value) {
         parts[3].split(',').forEach(function(value) {
             array.push(typedValue(value))
         })
-        var regex = value.match(/^\/(.*)\/(i?)$/);
         if (array.length > 1) {
             value = {}
             op = (op == '=') ? '$in' : '$nin'
             value[op] = array
         } else if (op == '!=') {
             value = { '$ne': array[0] }
-        } else if (regex) {
-            value = { '$regex': new RegExp(regex[1], regex[2]) };
         } else {
             value = array[0]
         }

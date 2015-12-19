@@ -9,14 +9,19 @@ describe("query-to-mongo(query) =>", function () {
             assert.deepEqual(results.criteria, {field: "value"})
         })
         it("should create numeric criteria", function () {
-            var results = q2m("i=10&f=1.2")
+            var results = q2m("i=10&f=1.2&z=0")
             assert.ok(results.criteria)
-            assert.deepEqual(results.criteria, {"i": 10, "f": 1.2})
+            assert.deepEqual(results.criteria, {"i": 10, "f": 1.2, "z": 0})
         })
         it("should create boolean criteria", function () {
             var results = q2m("t=true&f=false")
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {t: true, f: false})
+        })
+        it("should create regex criteria", function () {
+            var results = q2m("r=/regex/&ri=/regexi/i")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {r: /regex/, ri: /regexi/i})
         })
         it("should create Date criteria from YYYY-MM", function () {
             var results = q2m("d=2010-04"), expect
