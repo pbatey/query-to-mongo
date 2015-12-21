@@ -10,14 +10,19 @@ describe("query-to-mongo(query,{paser: qs}) =>", function () {
             assert.deepEqual(results.criteria, {foo: {bar: "value"}})
         })
         it("should create numeric criteria", function () {
-            var results = q2m("foo[i]=10&foo[f]=1.2", {parser: qs})
+            var results = q2m("foo[i]=10&foo[f]=1.2&foo[z]=0", {parser: qs})
             assert.ok(results.criteria)
-            assert.deepEqual(results.criteria, {foo:{"i": 10, "f": 1.2}})
+            assert.deepEqual(results.criteria, {foo:{"i": 10, "f": 1.2, "z": 0}})
         })
         it("should create boolean criteria", function () {
             var results = q2m("foo[t]=true&foo[f]=false", {parser: qs})
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {foo:{t: true, f: false}})
+        })
+        it("should create regex criteria", function () {
+            var results = q2m("foo[r]=/regex/&foo[ri]=/regexi/i", {parser: qs})
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {foo:{r: /regex/, ri: /regexi/i}})
         })
         // can't create comparisons for embedded documents
         it("shouldn't ignore deep criteria", function () {

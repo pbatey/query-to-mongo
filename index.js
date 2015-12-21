@@ -38,10 +38,21 @@ function sortToMongo(sort) {
 
 // Convert String to Number, Date, or Boolean if possible
 function typedValue(value) {
-    var n = Number(value)
-    if (n && n != NaN) return n
-    if (iso8601.test(value)) return new Date(value)
-    return (value == 'true') || ((value == 'false') ? false : value)
+  var regex = value.match(/^\/(.*)\/(i?)$/);
+
+  if (regex) {
+    return new RegExp(regex[1], regex[2]);
+  } else if (value === 'true') {
+    return true;
+  } else if (value === 'false') {
+    return false;
+  } else if (iso8601.test(value)) {
+    return new Date(value);
+  } else if (!isNaN(Number(value))) {
+    return Number(value);
+  }
+
+  return value;
 }
 
 // Convert a key/value pair split at an equals sign into a mongo comparison.
@@ -144,6 +155,7 @@ function queryOptionsToMongo(query, options) {
 }
 
 module.exports = function(query, options) {
+    query = query || {};
     options = options || {}
 
     if (!options.ignore) {
