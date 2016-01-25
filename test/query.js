@@ -147,6 +147,16 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {a: {"$exists": false}, b: 10})
         })
+        it("should create $type criteria with BSON type number", function () {
+            var results = q2m("field:type=2")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {$type: 2} })
+        })
+        it("should create $type criteria with BSON type name", function () {
+            var results = q2m("field:type=string")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {$type: "string"} })
+        })
     })
 
     describe(".options", function () {

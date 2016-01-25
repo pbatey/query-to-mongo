@@ -61,7 +61,8 @@ function typedValue(value) {
 // + f('key','value') => {key:'key',value:'value'}
 // + f('key>','value') => {key:'key',value:{$gte:'value'}}
 // + f('key') => {key:'key',value:{$exists: true}}
-// + f('!key') => {key:'key',value:{$exists: falseS}}
+// + f('!key') => {key:'key',value:{$exists: false}}
+// + f('key:op','value') => {key: 'key', value:{ $op: value}}
 function comparisonToMongo(key, value) {
     var join = (value == '') ? key : key.concat('=', value)
     var parts = join.match(/^(!?[^><!=:]+)(?:([><]=?|!?=|:.+=)(.+))?$/)
@@ -91,6 +92,10 @@ function comparisonToMongo(key, value) {
         } else {
             value = array[0]
         }
+    } else if (op[0] == ':' && op[op.length - 1] == '=') {
+        op = '$' + op.substr(1, op.length - 2)
+        value = { }
+        value[op] = typedValue(parts[3])
     } else {
         value = typedValue(parts[3])
         if (op == '>') value = {'$gt': value}
