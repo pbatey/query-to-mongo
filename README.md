@@ -130,7 +130,7 @@ Any query parameters other then _fields_, _omit_, _sort_, _offset_, and _limit_ 
 * Regex patterns. For example, `name=/^john/i` yields `{id: /^john/i}`.
 * Parameters without a value check that the field is present. For example, `foo&bar=10` yields `{foo: {$exists: true}, bar: 10}`.
 * Parameters prefixed with a _not_ (!) and without a value check that the field is not present. For example, `!foo&bar=10` yields `{foo: {$exists: false}, bar: 10}`.
-* Supports some of the named comparision operators ($type, ...).  For example, `foo:type=string`, yeilds `{ foo: {$type: 'string} }`.
+* Supports some of the named comparision operators ($type, $size).  For example, `foo:type=string`, yeilds `{ foo: {$type: 'string} }`.
 ### A note on embedded documents
 Comparisons on embedded documents should use mongo's [dot notation](http://docs.mongodb.org/manual/reference/glossary/#term-dot-notation) instead of express's 'extended' [query parser](https://www.npmjs.com/package/qs) (Use `foo.bar=value` instead of `foo[bar]=value`).
 
