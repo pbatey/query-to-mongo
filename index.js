@@ -60,16 +60,24 @@ function typedValue(value) {
 // for example:
 // + f('key','value') => {key:'key',value:'value'}
 // + f('key>','value') => {key:'key',value:{$gte:'value'}}
+// + f('key') => {key:'key',value:{$exists: true}}
+// + f('!key') => {key:'key',value:{$exists: falseS}}
 function comparisonToMongo(key, value) {
     var join = (value == '') ? key : key.concat('=', value)
-    var parts = join.match(/([^><!=]+)([><]=?|!?=)(.+)/)
+    var parts = join.match(/^(!?[^><!=:]+)(?:([><]=?|!?=|:.+=)(.+))?$/)
     var op, hash = {}
     if (!parts) return null
 
     key = parts[1]
     op = parts[2]
 
-    if (op == '=' || op == '!=') {
+    if (!op) {
+        if (key[0] != '!') value = { '$exists': true }
+        else {
+            key = key.substr(1)
+            value = { '$exists': false }
+        }
+    } else if (op == '=' || op == '!=') {
         var array = []
         parts[3].split(',').forEach(function(value) {
             array.push(typedValue(value))
@@ -115,12 +123,16 @@ function queryCriteriaToMongo(query, options) {
             deep = (typeof query[key] === 'object' && !hasOrdinalKeys(query[key]))
 
             if (deep) {
-                hash[key] = queryCriteriaToMongo(query[key])
+                p = {
+                    key: key,
+                    value: queryCriteriaToMongo(query[key])
+                }
             } else {
                 p = comparisonToMongo(key, query[key])
-                if (p) {
-                    hash[p.key] = p.value
-                }
+            }
+
+            if (p) {
+                hash[p.key] = p.value
             }
         }
     }
