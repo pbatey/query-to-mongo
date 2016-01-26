@@ -35,6 +35,11 @@ describe("query-to-mongo(query,{paser: qs}) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {a: "10", b: "11", c: "a,b", d: {$in: [10, 11]}, z: "that's all folks"})
         })
+        it("should allow whitespace around criteria", function () {
+            var results = q2m("a & b = c & d = e , f & g < 10 & h:size = 3  ", {parser: qs})
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {a: {$exists: true}, b: "c", d: {$in: ["e", "f"]}, g: {$lt: 10}, h: {$size: 3}})
+        })
     })
 
     describe(".options", function () {

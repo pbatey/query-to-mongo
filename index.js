@@ -38,6 +38,7 @@ function sortToMongo(sort) {
 
 // Convert String to Number, Date, or Boolean if possible
 function typedValue(value) {
+  value = value.trim();
   var regex = value.match(/^\/(.*)\/(i?)$/);
   var quotedString = value.match(/(["'])(?:\\\1|.)*?\1/);
 
@@ -80,12 +81,13 @@ function typedValues(svalue) {
 // + f('!key') => {key:'key',value:{$exists: false}}
 // + f('key:op','value') => {key: 'key', value:{ $op: value}}
 function comparisonToMongo(key, value) {
+    if (typeof value === 'string') value = value.trim()
     var join = (value == '') ? key : key.concat('=', value)
     var parts = join.match(/^(!?[^><!=:]+)(?:([><]=?|!?=|:.+=)(.+))?$/)
     var op, hash = {}
     if (!parts) return null
 
-    key = parts[1]
+    key = parts[1].trim()
     op = parts[2]
 
     if (!op) {
@@ -139,15 +141,17 @@ function queryCriteriaToMongo(query, options) {
     options = options || {}
     for (var key in query) {
         if (query.hasOwnProperty(key) && (!options.ignore || options.ignore.indexOf(key) == -1)) {
-            deep = (typeof query[key] === 'object' && !hasOrdinalKeys(query[key]))
+            v = query[key]
+            key = key.trim()
+            deep = (typeof v === 'object' && !hasOrdinalKeys(v))
 
             if (deep) {
                 p = {
                     key: key,
-                    value: queryCriteriaToMongo(query[key])
+                    value: queryCriteriaToMongo(v)
                 }
             } else {
-                p = comparisonToMongo(key, query[key])
+                p = comparisonToMongo(key, v)
             }
 
             if (p) {
