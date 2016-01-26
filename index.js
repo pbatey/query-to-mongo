@@ -39,9 +39,12 @@ function sortToMongo(sort) {
 // Convert String to Number, Date, or Boolean if possible
 function typedValue(value) {
   var regex = value.match(/^\/(.*)\/(i?)$/);
+  var quotedString = value.match(/(["'])(?:\\\1|.)*?\1/);
 
   if (regex) {
     return new RegExp(regex[1], regex[2]);
+  } else if (quotedString) {
+    return quotedString[0].substr(1, quotedString[0].length - 2);
   } else if (value === 'true') {
     return true;
   } else if (value === 'false') {
@@ -55,25 +58,44 @@ function typedValue(value) {
   return value;
 }
 
+// Convert a comma separated string value to an array of values.  Commas
+// in a quoted string are ignored.
+function typedValues(svalue) {
+    var commaSplit = /("[^"]*")|('[^']*')|([^,]+)/g
+    var values = []
+    svalue
+        .match(commaSplit)
+        .forEach(function(value) {
+            values.push(typedValue(value))
+        })
+    return values;
+}
+
 // Convert a key/value pair split at an equals sign into a mongo comparison.
 // Converts value Strings to Numbers or Booleans when possible.
 // for example:
 // + f('key','value') => {key:'key',value:'value'}
 // + f('key>','value') => {key:'key',value:{$gte:'value'}}
+// + f('key') => {key:'key',value:{$exists: true}}
+// + f('!key') => {key:'key',value:{$exists: false}}
+// + f('key:op','value') => {key: 'key', value:{ $op: value}}
 function comparisonToMongo(key, value) {
     var join = (value == '') ? key : key.concat('=', value)
-    var parts = join.match(/([^><!=]+)([><]=?|!?=)(.+)/)
+    var parts = join.match(/^(!?[^><!=:]+)(?:([><]=?|!?=|:.+=)(.+))?$/)
     var op, hash = {}
     if (!parts) return null
 
     key = parts[1]
     op = parts[2]
 
-    if (op == '=' || op == '!=') {
-        var array = []
-        parts[3].split(',').forEach(function(value) {
-            array.push(typedValue(value))
-        })
+    if (!op) {
+        if (key[0] != '!') value = { '$exists': true }
+        else {
+            key = key.substr(1)
+            value = { '$exists': false }
+        }
+    } else if (op == '=' || op == '!=') {
+        var array = typedValues(parts[3]);
         if (array.length > 1) {
             value = {}
             op = (op == '=') ? '$in' : '$nin'
@@ -83,6 +105,14 @@ function comparisonToMongo(key, value) {
         } else {
             value = array[0]
         }
+    } else if (op[0] == ':' && op[op.length - 1] == '=') {
+        op = '$' + op.substr(1, op.length - 2)
+        var array = []
+        parts[3].split(',').forEach(function(value) {
+            array.push(typedValue(value))
+        })
+        value = { }
+        value[op] = array.length == 1 ? array[0] : array
     } else {
         value = typedValue(parts[3])
         if (op == '>') value = {'$gt': value}
@@ -115,12 +145,16 @@ function queryCriteriaToMongo(query, options) {
             deep = (typeof query[key] === 'object' && !hasOrdinalKeys(query[key]))
 
             if (deep) {
-                hash[key] = queryCriteriaToMongo(query[key])
+                p = {
+                    key: key,
+                    value: queryCriteriaToMongo(query[key])
+                }
             } else {
                 p = comparisonToMongo(key, query[key])
-                if (p) {
-                    hash[p.key] = p.value
-                }
+            }
+
+            if (p) {
+                hash[p.key] = p.value
             }
         }
     }
