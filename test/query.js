@@ -137,6 +137,11 @@ describe("query-to-mongo(query) =>", function () {
             assert.notOk(results.criteria.sort, "sort")
             assert.deepEqual(results.criteria, {field: "value"})
         })
+        it("should create forced string criteria", function () {
+            var results = q2m("s='a,b'")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {s: "a,b"})
+        })
     })
 
     describe(".options", function () {

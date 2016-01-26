@@ -30,6 +30,11 @@ describe("query-to-mongo(query,{paser: qs}) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {field: "value", foo: {envelope: true}})
         })
+        it("should create string criteria when forced with a quote", function () {
+            var results = q2m("a='10'&b=\'11\'&c='a,b'&d=10,11&z=\"that's all folks\"", {parser: qs})
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {a: "10", b: "11", c: "a,b", d: {$in: [10, 11]}, z: "that's all folks"})
+        })
     })
 
     describe(".options", function () {
