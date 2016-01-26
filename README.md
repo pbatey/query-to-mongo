@@ -122,7 +122,7 @@ Any query parameters other then _fields_, _omit_, _sort_, _offset_, and _limit_ 
 
 * Supports standard comparison operations (=, !=, >, <, >=, <=).
 * Numeric values, where `Number(value) != NaN`, are compared as numbers (ie., `field=10` yields `{field:10}`).
-* Values of _true_ and _false_ are youcompared as booleans (ie., `{field:true}`)
+* Values of _true_ and _false_ are compared as booleans (ie., `{field:true}`)
 * Values that are [dates](http://www.w3.org/TR/NOTE-datetime) are compared as dates (except for YYYY which matches the number rule).
 * Multiple equals comparisons are merged into a `$in` operator. For example, `id=a&id=b` yields `{id:{$in:['a','b']}}`.
 * Multiple not-equals comparisons are merged into a `$nin` operator. For example, `id!=a&id!=b` yields `{id:{$nin:['a','b']}}`.
@@ -131,6 +131,8 @@ Any query parameters other then _fields_, _omit_, _sort_, _offset_, and _limit_ 
 * Parameters without a value check that the field is present. For example, `foo&bar=10` yields `{foo: {$exists: true}, bar: 10}`.
 * Parameters prefixed with a _not_ (!) and without a value check that the field is not present. For example, `!foo&bar=10` yields `{foo: {$exists: false}, bar: 10}`.
 * Supports some of the named comparision operators ($type, $size and $all).  For example, `foo:type=string`, yeilds `{ foo: {$type: 'string} }`.
+* Support for forced string comparison; value in single or double quotes (`field='10'` or `field="10"`) would force a string compare. Allows for string with embedded comma (`field="a,b"`) and quotes (`field="that's all folks"`).
+
 ### A note on embedded documents
 Comparisons on embedded documents should use mongo's [dot notation](http://docs.mongodb.org/manual/reference/glossary/#term-dot-notation) instead of express's 'extended' [query parser](https://www.npmjs.com/package/qs) (Use `foo.bar=value` instead of `foo[bar]=value`).
 
@@ -145,8 +147,8 @@ npm test
 ```
 
 ## Todo
-* Add support for forced string comparison; value in quotes (`field='10'`) would force a string compare. Should allow for string with embedded comma (`field='a,b'`).
 * Geospatial search
 * $text searches
 * $mod comparision
 * Bitwise comparisions
+* Escaping or double quoting in forced string comparison, ='That\'s all folks' or ='That''s all folks'

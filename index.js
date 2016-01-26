@@ -39,9 +39,12 @@ function sortToMongo(sort) {
 // Convert String to Number, Date, or Boolean if possible
 function typedValue(value) {
   var regex = value.match(/^\/(.*)\/(i?)$/);
+  var quotedString = value.match(/(["'])(?:\\\1|.)*?\1/);
 
   if (regex) {
     return new RegExp(regex[1], regex[2]);
+  } else if (quotedString) {
+    return quotedString[0].substr(1, quotedString[0].length - 2);
   } else if (value === 'true') {
     return true;
   } else if (value === 'false') {
@@ -53,6 +56,19 @@ function typedValue(value) {
   }
 
   return value;
+}
+
+// Convert a comma separated string value to an array of values.  Commas
+// in a quoted string are ignored.
+function typedValues(svalue) {
+    var commaSplit = /("[^"]*")|('[^']*')|([^,]+)/g
+    var values = []
+    svalue
+        .match(commaSplit)
+        .forEach(function(value) {
+            values.push(typedValue(value))
+        })
+    return values;
 }
 
 // Convert a key/value pair split at an equals sign into a mongo comparison.
@@ -79,10 +95,7 @@ function comparisonToMongo(key, value) {
             value = { '$exists': false }
         }
     } else if (op == '=' || op == '!=') {
-        var array = []
-        parts[3].split(',').forEach(function(value) {
-            array.push(typedValue(value))
-        })
+        var array = typedValues(parts[3]);
         if (array.length > 1) {
             value = {}
             op = (op == '=') ? '$in' : '$nin'

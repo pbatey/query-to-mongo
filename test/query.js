@@ -138,7 +138,12 @@ describe("query-to-mongo(query) =>", function () {
         it("should create $all criteria", function () {
             var results = q2m("array:all=50,60")
             assert.ok(results.criteria)
-            assert.deepEqual(results.criteria, {array: {$all: [50, 60] } })
+            assert.deepEqual(results.criteria, {array: {$all: [50, 60]} })
+        })
+        it("should create forced string criteria", function () {
+            var results = q2m("s='a,b'")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {s: "a,b"})
         })
     })
 
