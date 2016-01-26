@@ -107,10 +107,7 @@ function comparisonToMongo(key, value) {
         }
     } else if (op[0] == ':' && op[op.length - 1] == '=') {
         op = '$' + op.substr(1, op.length - 2)
-        var array = []
-        parts[3].split(',').forEach(function(value) {
-            array.push(typedValue(value))
-        })
+        var array = typedValues(parts[3]);
         value = { }
         value[op] = array.length == 1 ? array[0] : array
     } else {
