@@ -101,7 +101,7 @@ describe("query-to-mongo(query) =>", function () {
             assert.deepEqual(results.criteria, {field: {"$nin": ["a","b"]}})
         })
         it("should ignore criteria", function () {
-            var results = q2m("field=value&envelope=true&&offset=0&limit=10&fields=id,name&sort=name", { ignore: ['envelope']})
+            var results = q2m("field=value&envelope=true&&offset=0&limit=10&fields=id&sort=name", { ignore: ['envelope']})
             assert.ok(results.criteria)
             assert.notOk(results.criteria.envelope, "envelope")
             assert.notOk(results.criteria.skip, "offset")
@@ -109,6 +109,36 @@ describe("query-to-mongo(query) =>", function () {
             assert.notOk(results.criteria.fields, "fields")
             assert.notOk(results.criteria.sort, "sort")
             assert.deepEqual(results.criteria, {field: "value"})
+        })
+        it("should create $exists true criteria", function () {
+            var results = q2m("a&b=10&c", { ignore: ['c']})
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {a: {"$exists": true}, b: 10})
+        })
+        it("should create $exists false criteria", function () {
+            var results = q2m("!a&b=10&c", { ignore: ['c']})
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {a: {"$exists": false}, b: 10})
+        })
+        it("should create $type criteria with BSON type number", function () {
+            var results = q2m("field:type=2")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {$type: 2} })
+        })
+        it("should create $type criteria with BSON type name", function () {
+            var results = q2m("field:type=string")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {$type: "string"} })
+        })
+        it("should create $size criteria", function () {
+            var results = q2m("array:size=2")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {array: {$size: 2} })
+        })
+        it("should create $all criteria", function () {
+            var results = q2m("array:all=50,60")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {array: {$all: [50, 60] } })
         })
     })
 

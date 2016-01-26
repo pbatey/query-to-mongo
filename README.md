@@ -128,7 +128,9 @@ Any query parameters other then _fields_, _omit_, _sort_, _offset_, and _limit_ 
 * Multiple not-equals comparisons are merged into a `$nin` operator. For example, `id!=a&id!=b` yields `{id:{$nin:['a','b']}}`.
 * Comma separated values in equals or not-equals yeild an `$in` or `$nin` operator. For example, `id=a,b` yields `{id:{$in:['a','b']}}`.
 * Regex patterns. For example, `name=/^john/i` yields `{id: /^john/i}`.
-
+* Parameters without a value check that the field is present. For example, `foo&bar=10` yields `{foo: {$exists: true}, bar: 10}`.
+* Parameters prefixed with a _not_ (!) and without a value check that the field is not present. For example, `!foo&bar=10` yields `{foo: {$exists: false}, bar: 10}`.
+* Supports some of the named comparision operators ($type, $size and $all).  For example, `foo:type=string`, yeilds `{ foo: {$type: 'string} }`.
 ### A note on embedded documents
 Comparisons on embedded documents should use mongo's [dot notation](http://docs.mongodb.org/manual/reference/glossary/#term-dot-notation) instead of express's 'extended' [query parser](https://www.npmjs.com/package/qs) (Use `foo.bar=value` instead of `foo[bar]=value`).
 
@@ -143,6 +145,8 @@ npm test
 ```
 
 ## Todo
-* Add support for `$exists`. Arguments w/o a value (ie., `foo&bar=10`) would yield `{'foo':{$exists:true}, 'bar':...}`; prefixed with not(!) (ie., `!foo&bar=10`) would yield `{'foo': {$exists: false}, 'bar': ...}`.
-* Add support for `$regex`. Values with slashes (field=/pattern/) would result in `{'field':{$regex: /pattern/}}`. Don't forget case-insensitive patterns (/pattern/i).
 * Add support for forced string comparison; value in quotes (`field='10'`) would force a string compare. Should allow for string with embedded comma (`field='a,b'`).
+* Geospatial search
+* $text searches
+* $mod comparision
+* Bitwise comparisions
