@@ -141,7 +141,7 @@ function queryCriteriaToMongo(query, options) {
     var hash = {}, p, v, deep
     options = options || {}
     for (var key in query) {
-        if (query.hasOwnProperty(key) && (!options.ignore || options.ignore.indexOf(key) == -1)) {
+        if (Object.prototype.hasOwnProperty.call(query,key) && (!options.ignore || options.ignore.indexOf(key) == -1)) {
             deep = (typeof query[key] === 'object' && !hasOrdinalKeys(query[key]))
 
             if (deep) {
