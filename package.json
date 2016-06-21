@@ -8,7 +8,7 @@
     "url": "http://github.com/pbatey/query-to-mongo"
   },
   "author": "Phil Batey <pbatey@gmail.com>",
-  "license": "MIT License",
+  "license": "MIT",
   "devDependencies": {
     "chai": "^2.1.0",
     "mocha": "^2.1.0",
