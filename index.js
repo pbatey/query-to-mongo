@@ -49,7 +49,7 @@ function typedValue(value) {
     return true;
   } else if (value === 'false') {
     return false;
-  } else if (iso8601.test(value)) {
+  } else if (iso8601.test(value) && value.length !== 4) {
     return new Date(value);
   } else if (!isNaN(Number(value))) {
     return Number(value);
