@@ -1,6 +1,6 @@
 {
   "name": "query-to-mongo",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "Convert query parameters into mongo query criteria and options.",
   "main": "index.js",
   "repository": {
@@ -8,7 +8,7 @@
     "url": "http://github.com/pbatey/query-to-mongo"
   },
   "author": "Phil Batey <pbatey@gmail.com>",
-  "license": "MIT License",
+  "license": "MIT",
   "devDependencies": {
     "chai": "^2.1.0",
     "mocha": "^2.1.0",

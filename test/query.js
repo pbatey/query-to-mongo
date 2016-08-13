@@ -145,6 +145,11 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {s: "a,b"})
         })
+        it("should create numeric criteria from YYYY exception", function () {
+            var results = q2m("d=2016")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {d: 2016})
+        })
     })
 
     describe(".options", function () {
