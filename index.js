@@ -154,7 +154,11 @@ function queryCriteriaToMongo(query, options) {
             }
 
             if (p) {
-                hash[p.key] = p.value
+                if (!hash[p.key]) {
+                    hash[p.key] = p.value;
+                } else {
+                    hash[p.key] = Object.assign(hash[p.key], p.value);
+                }
             }
         }
     }
