@@ -100,6 +100,16 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {field: {"$nin": ["a","b"]}})
         })
+        it("should create mixed criteria", function () {
+            var results = q2m("field!=10&field!=20&field>3")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$nin": [10,20], "$gt": 3}})
+        })
+        it("should create range criteria",function () {
+            var results = q2m("field>=10&field<=20")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$gte": 10, "$lte": 20}})
+        })
         it("should ignore criteria", function () {
             var results = q2m("field=value&envelope=true&&offset=0&limit=10&fields=id&sort=name", { ignore: ['envelope']})
             assert.ok(results.criteria)
