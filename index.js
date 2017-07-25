@@ -7,7 +7,7 @@ function fieldsToMongo(fields) {
     if (!fields) return null
     var hash = {}
     fields.split(',').forEach(function(field) {
-        hash[field.trim()] = true
+        hash[field.trim()] = 1
     })
     return hash
 }
@@ -18,7 +18,7 @@ function omitFieldsToMongo(omitFields) {
     if (!omitFields) return null
     var hash = {}
     omitFields.split(',').forEach(function(omitField) {
-        hash[omitField.trim()] = false
+        hash[omitField.trim()] = 0
     })
     return hash
 }

@@ -46,7 +46,7 @@ describe("query-to-mongo(query,{paser: qs}) =>", function () {
         it("should create field option", function () {
             var results = q2m("fields=a,b,c", {parser: qs})
             assert.ok(results.options)
-            assert.deepEqual(results.options, {fields: {a:true, b:true, c:true}})
+            assert.deepEqual(results.options, {fields: {a:1, b:1, c:1}})
         })
         it("should create sort option", function () {
             var results = q2m("sort=a,+b,-c", {parser: qs})
