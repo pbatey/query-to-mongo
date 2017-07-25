@@ -152,3 +152,28 @@ npm test
 * $mod comparision
 * Bitwise comparisions
 * Escaping or double quoting in forced string comparison, ='That\'s all folks' or ='That''s all folks'
+
+Creating a Release
+------------------
+
+1. Increment the version and tag the release `npm version major|minor|patch`
+2. Push the tags `git push origin master --tags`
+3. Publish the release `npm publish ./`
+
+### Major Release
+
+    npm version major
+    git push origin master --tags
+    npm publish ./
+
+### Minor Release (backwards compatible changes)
+
+    npm version minor
+    git push origin master --tags
+    npm publish ./
+
+### Patch Release (bug fix)
+
+    npm version patch
+    git push origin master --tags
+    npm publish ./
