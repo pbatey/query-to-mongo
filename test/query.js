@@ -116,6 +116,11 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {field: {"$ne": "value"}})
         })
+        it("should create $ne criteria from !value", function () {
+            var results = q2m("field=%21value")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$ne": "value"}})
+        })
 
         it("should create $in criteria", function () {
             var results = q2m("field=a&field=b")
@@ -146,6 +151,11 @@ describe("query-to-mongo(query) =>", function () {
             assert.notOk(results.criteria.fields, "fields")
             assert.notOk(results.criteria.sort, "sort")
             assert.deepEqual(results.criteria, {field: "value"})
+        })
+        it("should create $exists criteria from value", function () {
+            var results = q2m("a=&b=%21")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {a: {"$exists": true}, b: {"$exists": false} } )
         })
         it("should create $exists true criteria", function () {
             var results = q2m("a&b=10&c", { ignore: ['c']})

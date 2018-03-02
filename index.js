@@ -95,6 +95,8 @@ function comparisonToMongo(key, value) {
             key = key.substr(1)
             value = { '$exists': false }
         }
+    } else if (op == '=' && parts[3] == '!') {
+        value = { '$exists': false }
     } else if (op == '=' || op == '!=') {
         var array = typedValues(parts[3]);
         if (array.length > 1) {
@@ -103,6 +105,8 @@ function comparisonToMongo(key, value) {
             value[op] = array
         } else if (op == '!=') {
             value = { '$ne': array[0] }
+        } else if (array[0][0] == '!') {
+            value = { '$ne': array[0].substr(1) }
         } else {
             value = array[0]
         }
