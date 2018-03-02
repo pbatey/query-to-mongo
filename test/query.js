@@ -90,6 +90,33 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {field: {"$ne": "value"}})
         })
+
+        it("should create $gt criteria from value", function () {
+            var results = q2m("field=%3Evalue")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$gt": "value"}})
+        })  
+        it("should create $lt criteria from value", function () {
+            var results = q2m("field=%3Cvalue")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$lt": "value"}})
+        })  
+        it("should create $gte criteria from value", function () {
+            var results = q2m("field=%3E%3Dvalue")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$gte": "value"}})
+        })  
+        it("should create $lte criteria from value", function () {
+            var results = q2m("field=%3C%3Dvalue")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$lte": "value"}})
+        })  
+        it("should create $ne criteria from value", function () {
+            var results = q2m("field=%21%3Dvalue")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$ne": "value"}})
+        })
+
         it("should create $in criteria", function () {
             var results = q2m("field=a&field=b")
             assert.ok(results.criteria)

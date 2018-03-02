@@ -2,6 +2,7 @@
 Node.js package to convert query parameters into a [mongo](https://www.mongodb.org) query criteria and options
 
 For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10` becomes the following hash:
+
 ```javascript
 {
   criteria: {
@@ -17,6 +18,7 @@ For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&o
 }
 ```
 The resulting query object can be used as parameters for a mongo collection query:
+
 ```javascript
 var q2m = require('query-to-mongo')
 var mongoskin = require('mongoskin')
@@ -28,14 +30,27 @@ collection.find(query.criteria, query.options).toArray(function(err, results) {
 })
 ```
 
+As of version 0.8.0, comparision operators that are encoded into the value are also considered. For example, a query sucha as: `name=john&age=%3E21` becomes the following hash:
+
+```javascript
+{
+  criteria: {
+    name: 'john',
+    age: { $gt: 21 }
+  }
+}
+```
+
 ## API
 ### queryToMongo(query, options)
 Convert the query portion of a url to a mongo query.
+
 ```javascript
 var queryToMongo = require('query-to-mongo')
 var query = queryToMongo('name=john&age>21&limit=10')
 console.log(query)
 ```
+
 ```javascript
 { criteria: { name: 'john', age: { '$gt': 21 } },
   options: { limit: 10 },
@@ -54,11 +69,13 @@ console.log(query)
 
 ##### links(url, totalCount)
 Calculate relative links given the base url and totalCount. Can be used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
+
 ```javascript
 var queryToMongo = require('query-to-mongo')
 var query = queryToMongo('name=john&age>21&offset=20&limit=10')
 console.log(query.links('http://localhost/api/v1/users', 100))
 ```
+
 ```javascript
 { prev: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=10&limit=10',
   first: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=0&limit=10',
@@ -67,14 +84,18 @@ console.log(query.links('http://localhost/api/v1/users', 100))
 ```
 
 ## Use
+
 The module is intended for use by express routes, and so takes a parsed query as input:
+
 ```
 var querystring = require('querystring')
 var q2m = require('query-to-mongo')
 var query = 'name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10'
 var q = q2m(querystring.parse(query))
 ```
+
 This makes it easy to use in an express route:
+
 ```
 router.get('/api/v1/mycollection', function(req, res, next) {
   var q = q2m(res.query);
@@ -95,12 +116,15 @@ The _sort_ argument is a comma separated list of fields to sort the results by. 
 
 ### Paging
 The _offset_ and _limit_ arguments indicate the subset of the full results to return. By default, the full results are returned. If _limit_ is set and the total count is obtained for the query criteria, pagination links can be generated:
+
 ```
 collection.count(q.query, function(err, count) {
   var links = q.links('http://localhost/api/v1/mycollection', count)
 }
 ```
+
 For example, if _offset_ was 20, _limit_ was 10, and _count_ was 95, the following links would be generated:
+
 ```
 {
    'prev': 'http://localhost/api/v1/mycollection?offset=10&limit=10',
@@ -109,10 +133,12 @@ For example, if _offset_ was 20, _limit_ was 10, and _count_ was 95, the followi
    'last': 'http://localhost/api/v1/mycollection?offset=90&limit=10'
 }
 ```
+
 These pagination links can be used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
 
 ### Filtering
 Any query parameters other then _fields_, _omit_, _sort_, _offset_, and _limit_ are interpreted as query criteria. For example `name=john&age>21` results in a _criteria_ value of:
+
 ```
 {
   'name': 'john',
@@ -156,9 +182,10 @@ npm test
 Creating a Release
 ------------------
 
-1. Increment the version and tag the release `npm version major|minor|patch`
-2. Push the tags `git push origin master --tags`
-3. Publish the release `npm publish ./`
+1. Ensure all unit tests pass with `npm test`
+2. Use `npm version major|minor|patch` to increment the version in _package.json_ and tag the release
+3. Push the tags `git push origin master --tags`
+4. Publish the release `npm publish ./`
 
 ### Major Release
 

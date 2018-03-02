@@ -79,9 +79,10 @@ function typedValues(svalue) {
 // + f('key') => {key:'key',value:{$exists: true}}
 // + f('!key') => {key:'key',value:{$exists: false}}
 // + f('key:op','value') => {key: 'key', value:{ $op: value}}
+// + f('key','op:value') => {key: 'key', value:{ $op: value}}
 function comparisonToMongo(key, value) {
     var join = (value == '') ? key : key.concat('=', value)
-    var parts = join.match(/^(!?[^><!=:]+)(?:([><]=?|!?=|:.+=)(.+))?$/)
+    var parts = join.match(/^(!?[^><!=:]+)(?:=?([><]=?|!?=|:.+=)(.+))?$/)
     var op, hash = {}
     if (!parts) return null
 
