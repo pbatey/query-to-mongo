@@ -1,6 +1,6 @@
 {
   "name": "query-to-mongo",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Convert query parameters into mongo query criteria and options.",
   "main": "index.js",
   "repository": {
