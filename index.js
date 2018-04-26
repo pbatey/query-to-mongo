@@ -104,9 +104,15 @@ function comparisonToMongo(key, value) {
             op = (op == '=') ? '$in' : '$nin'
             value[op] = array
         } else if (op == '!=') {
-            value = { '$ne': array[0] }
+            value = array[0] instanceof RegExp ?
+                { '$not': array[0] } :
+                { '$ne': array[0] }
         } else if (array[0][0] == '!') {
-            value = { '$ne': array[0].substr(1) }
+            var sValue = array[0].substr(1)
+            var regex = sValue.match(/^\/(.*)\/(i?)$/) 
+            value = regex ?
+                { '$not': new RegExp(regex[1], regex[2]) } :
+                { '$ne': sValue }
         } else {
             value = array[0]
         }

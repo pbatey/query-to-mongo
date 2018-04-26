@@ -90,6 +90,11 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {field: {"$ne": "value"}})
         })
+        it("should create $not criteria", function () {
+            var results = q2m("field!=/.*value*./i")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$not": /.*value*./i}})
+        })
 
         it("should create $gt criteria from value", function () {
             var results = q2m("field=%3Evalue")
@@ -116,10 +121,20 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {field: {"$ne": "value"}})
         })
+        it("should create $not criteria from /.*value*./i", function () {
+            var results = q2m("field=%21%3D/.*value*./i")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$not": /.*value*./i}})
+        })
         it("should create $ne criteria from !value", function () {
             var results = q2m("field=%21value")
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {field: {"$ne": "value"}})
+        })
+        it("should create $not criteria from !/.*value*./i", function () {
+            var results = q2m("field=%21/.*value*./i")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$not": /.*value*./i}})
         })
 
         it("should create $in criteria", function () {
