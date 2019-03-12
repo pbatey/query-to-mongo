@@ -131,6 +131,11 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {field: {"$ne": "value"}})
         })
+        it("should create $nin criteria from multiple !value", function () {
+            var results = q2m("field=%21a&field=%21b")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {field: {"$nin": ["a","b"] }})
+        })
         it("should create $not criteria from !/.*value*./i", function () {
             var results = q2m("field=%21/.*value*./i")
             assert.ok(results.criteria)

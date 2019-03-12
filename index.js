@@ -36,8 +36,9 @@ function sortToMongo(sort) {
     return hash
 }
 
-// Convert String to Number, Date, or Boolean if possible
+// Convert String to Number, Date, or Boolean if possible. Also strips ! prefix
 function typedValue(value) {
+  if (value[0] == '!') value = value.substr(1)
   var regex = value.match(/^\/(.*)\/(i?)$/);
   var quotedString = value.match(/(["'])(?:\\\1|.)*?\1/);
 
@@ -59,7 +60,7 @@ function typedValue(value) {
 }
 
 // Convert a comma separated string value to an array of values.  Commas
-// in a quoted string are ignored.
+// in a quoted string are ignored.  Also strips ! prefix from values.
 function typedValues(svalue) {
     var commaSplit = /("[^"]*")|('[^']*')|([^,]+)/g
     var values = []
@@ -98,6 +99,7 @@ function comparisonToMongo(key, value) {
     } else if (op == '=' && parts[3] == '!') {
         value = { '$exists': false }
     } else if (op == '=' || op == '!=') {
+        if ( op == '=' && parts[3][0] == '!' ) op = '!='
         var array = typedValues(parts[3]);
         if (array.length > 1) {
             value = {}
