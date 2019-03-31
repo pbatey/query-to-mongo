@@ -182,9 +182,9 @@ function queryCriteriaToMongo(query, options) {
 // for example {fields:'a,b',offset:8,limit:16} becomes {fields:{a:true,b:true},skip:8,limit:16}
 function queryOptionsToMongo(query, options) {
     var hash = {},
-        fields = fieldsToMongo(query.fields),
-        omitFields = omitFieldsToMongo(query.omit),
-        sort = sortToMongo(query.sort),
+        fields = fieldsToMongo(query.$fields),
+        omitFields = omitFieldsToMongo(query.$omit),
+        sort = sortToMongo(query.$sort),
         maxLimit = options.maxLimit || 9007199254740992,
         limit = options.maxLimit || 0
 
@@ -194,8 +194,8 @@ function queryOptionsToMongo(query, options) {
     if (omitFields) hash.fields = omitFields
     if (sort) hash.sort = sort
 
-    if (query.offset) hash.skip = Number(query.offset)
-    if (query.limit) limit = Math.min(Number(query.limit), maxLimit)
+    if (query.$offset) hash.skip = Number(query.$offset)
+    if (query.$limit) limit = Math.min(Number(query.$limit), maxLimit)
     if (limit) {
         hash.limit = limit
     } else if (options.maxLimit) {
@@ -214,7 +214,7 @@ module.exports = function(query, options) {
     } else {
         options.ignore = (typeof options.ignore === 'string') ? [options.ignore] : options.ignore
     }
-    options.ignore = options.ignore.concat(['fields', 'omit', 'sort', 'offset', 'limit'])
+    options.ignore = options.ignore.concat(['$fields', '$omit', '$sort', '$offset', '$limit'])
     if (!options.parser) options.parser = querystring
 
     if (typeof query === 'string') query = options.parser.parse(query)
@@ -234,18 +234,18 @@ module.exports = function(query, options) {
             options = options || {}
 
             if (offset > 0) {
-                query.offset = Math.max(offset - limit, 0)
+                query.$offset = Math.max(offset - limit, 0)
                 links['prev'] = url + '?' + options.parser.stringify(query)
-                query.offset = 0
+                query.$offset = 0
                 links['first'] = url + '?' + options.parser.stringify(query)
             }
             if (offset + limit < totalCount) {
                 last.pages = Math.ceil(totalCount / limit)
                 last.offset = (last.pages - 1) * limit
 
-                query.offset = Math.min(offset + limit, last.offset)
+                query.$offset = Math.min(offset + limit, last.offset)
                 links['next'] = url  + '?' + options.parser.stringify(query)
-                query.offset = last.offset
+                query.$offset = last.offset
                 links['last'] = url  + '?' + options.parser.stringify(query)
             }
             return links

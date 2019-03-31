@@ -1,7 +1,7 @@
 # query-to-mongo
 Node.js package to convert query parameters into a [mongo](https://www.mongodb.org) query criteria and options
 
-For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10` becomes the following hash:
+For example, a query such as: `name=john&age>21&$fields=name,age&$sort=name,-age&$offset=10&$limit=10` becomes the following hash:
 
 ```javascript
 {
@@ -24,7 +24,7 @@ var q2m = require('query-to-mongo')
 var mongoskin = require('mongoskin')
 var db = mongoskin.db('mongodb://localhost:27027/mydb')
 var collection = db.collection('mycollection')
-var query = q2m('name=john&age>13&limit=20')
+var query = q2m('name=john&age>13&$limit=20')
 collection.find(query.criteria, query.options).toArray(function(err, results) {
   ...
 })
@@ -47,7 +47,7 @@ Convert the query portion of a url to a mongo query.
 
 ```javascript
 var queryToMongo = require('query-to-mongo')
-var query = queryToMongo('name=john&age>21&limit=10')
+var query = queryToMongo('name=john&age>21&$limit=10')
 console.log(query)
 ```
 
@@ -59,7 +59,7 @@ console.log(query)
 
 #### options:
 * **maxLimit** The maximum limit (default is none)
-* **ignore** List of criteria to ignore in addition to those used for query options ("fields", "sort", "offset", "limit")
+* **ignore** List of criteria to ignore in addition to those used for query options ("$fields", "$sort", "$offset", "$limit")
 * **parser** Query parser to use instead of _querystring_. Must implement `parse(string)` and `stringify(obj)`.
 
 #### returns:
@@ -72,15 +72,15 @@ Calculate relative links given the base url and totalCount. Can be used to popul
 
 ```javascript
 var queryToMongo = require('query-to-mongo')
-var query = queryToMongo('name=john&age>21&offset=20&limit=10')
+var query = queryToMongo('name=john&age>21&$offset=20&$limit=10')
 console.log(query.links('http://localhost/api/v1/users', 100))
 ```
 
 ```javascript
-{ prev: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=10&limit=10',
-  first: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=0&limit=10',
-  next: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=30&limit=10',
-  last: 'http://localhost/api/v1/users?name=john&age%3E21=&offset=90&limit=10' }
+{ prev: 'http://localhost/api/v1/users?name=john&age%3E21=&%24offset=10&%24limit=10',
+  first: 'http://localhost/api/v1/users?name=john&age%3E21=&%24offset=0&%24limit=10',
+  next: 'http://localhost/api/v1/users?name=john&age%3E21=&%24offset=30&%24limit=10',
+  last: 'http://localhost/api/v1/users?name=john&age%3E21=&%24offset=90&%24limit=10' }
 ```
 
 ## Use
@@ -90,7 +90,7 @@ The module is intended for use by express routes, and so takes a parsed query as
 ```
 var querystring = require('querystring')
 var q2m = require('query-to-mongo')
-var query = 'name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10'
+var query = 'name=john&age>21&$fields=name,age&$sort=name,-age&$offset=10&$limit=10'
 var q = q2m(querystring.parse(query))
 ```
 
@@ -106,13 +106,13 @@ router.get('/api/v1/mycollection', function(req, res, next) {
 The format for arguments was inspired by item #7 in [this article](http://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/) about best practices for RESTful APIs.
 
 ### Field selection
-The _fields_ argument is a comma separated list of field names to include in the results. For example `fields=name,age` results in a _option.fields_ value of `{'name':true,'age':true}`. If no fields are specified then _option.fields_ is null, returning full documents as results.
+The _fields_ argument is a comma separated list of field names to include in the results. For example `$fields=name,age` results in a _option.fields_ value of `{'name':true,'age':true}`. If no fields are specified then _option.fields_ is null, returning full documents as results.
 
-The _omit_ argument is a comma separated list of field names to exclude in the results. For example `omit=name,age` results in a _option.fields_ value of `{'name':false,'age':false}`. If no fields are specified then _option.fields_ is null, returning full documents as results.
+The _omit_ argument is a comma separated list of field names to exclude in the results. For example `$omit=name,age` results in a _option.fields_ value of `{'name':false,'age':false}`. If no fields are specified then _option.fields_ is null, returning full documents as results.
 
 Note that either _fields_ or _omit_ can be used.  If both are specified then _omit_ takes precedence and the _fields_ entry is ignored.  Mongo will not accept a mix of true and false fields
 ### Sorting
-The _sort_ argument is a comma separated list of fields to sort the results by. For example `sort=name,-age` results in a _option.sort_ value of `{'name':1,'age':-1}`. If no sort is specified then _option.sort_ is null and the results are not sorted.
+The _sort_ argument is a comma separated list of fields to sort the results by. For example `$sort=name,-age` results in a _option.sort_ value of `{'name':1,'age':-1}`. If no sort is specified then _option.sort_ is null and the results are not sorted.
 
 ### Paging
 The _offset_ and _limit_ arguments indicate the subset of the full results to return. By default, the full results are returned. If _limit_ is set and the total count is obtained for the query criteria, pagination links can be generated:
@@ -127,10 +127,10 @@ For example, if _offset_ was 20, _limit_ was 10, and _count_ was 95, the followi
 
 ```
 {
-   'prev': 'http://localhost/api/v1/mycollection?offset=10&limit=10',
-   'first': `http://localhost/api/v1/mycollection?offset=0&limit=10`,
-   'next': 'http://localhost/api/v1/mycollection?offset=30&limit=10',
-   'last': 'http://localhost/api/v1/mycollection?offset=90&limit=10'
+   'prev': 'http://localhost/api/v1/mycollection?%24offset=10&%24limit=10',
+   'first': `http://localhost/api/v1/mycollection?%24offset=0&%24limit=10`,
+   'next': 'http://localhost/api/v1/mycollection?%24offset=30&%24limit=10',
+   'last': 'http://localhost/api/v1/mycollection?%24offset=90&%24limit=10'
 }
 ```
 
@@ -157,7 +157,7 @@ Any query parameters other then _fields_, _omit_, _sort_, _offset_, and _limit_ 
 * Parameters without a value check that the field is present. For example, `foo&bar=10` yields `{foo: {$exists: true}, bar: 10}`.
 * Parameters prefixed with a _not_ (!) and without a value check that the field is not present. For example, `!foo&bar=10` yields `{foo: {$exists: false}, bar: 10}`.
 * Supports some of the named comparision operators ($type, $size and $all).  For example, `foo:type=string`, yeilds `{ foo: {$type: 'string} }`.
-* Support for forced string comparison; value in single or double quotes (`field='10'` or `field="10"`) would force a string compare. Allows for string with embedded comma (`field="a,b"`) and quotes (`field="that's all folks"`).
+* Support for forced string comparison; value in single or double quotes (`$field='10'` or `field="10"`) would force a string compare. Allows for string with embedded comma (`field="a,b"`) and quotes (`field="that's all folks"`).
 
 ### A note on embedded documents
 Comparisons on embedded documents should use mongo's [dot notation](http://docs.mongodb.org/manual/reference/glossary/#term-dot-notation) instead of express's 'extended' [query parser](https://www.npmjs.com/package/qs) (Use `foo.bar=value` instead of `foo[bar]=value`).
