@@ -235,11 +235,6 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.options)
             assert.deepEqual(results.options, {fields: {b:0}})
         })
-        it("should create omit option", function () {
-            var results = q2m("omit=b")
-            assert.ok(results.options)
-            assert.deepEqual(results.options, {fields: {b:0}})
-        })
         it("should create sort option", function () {
             var results = q2m("sort=a,+b,-c")
             assert.ok(results.options)
@@ -247,6 +242,39 @@ describe("query-to-mongo(query) =>", function () {
         })
         it("should limit queries", function () {
             var results = q2m("limit=100", {maxLimit: 50})
+            assert.ok(results.options)
+            assert.deepEqual(results.options, {limit: 50})
+        })
+    })
+
+    describe(".options (altKeywords)", function () {
+        it("should create paging options", function () {
+            var altKeywords = {fields:'$fields', offset:'$offset', limit:'$limit', sort: '$sort', omit: '$omit'}
+            var results = q2m("$offset=8&$limit=16", {keywords: altKeywords})
+            assert.ok(results.options)
+            assert.deepEqual(results.options, {skip: 8, limit: 16})
+        })
+        it("should create field option", function () {
+            var altKeywords = {fields:'$fields', offset:'$offset', limit:'$limit', sort: '$sort', omit: '$omit'}
+            var results = q2m("$fields=a,b,c", {keywords: altKeywords})
+            assert.ok(results.options)
+            assert.deepEqual(results.options, {fields: {a:1, b:1, c:1}})
+        })
+        it("should create omit option", function () {
+            var altKeywords = {fields:'$fields', offset:'$offset', limit:'$limit', sort: '$sort', omit: '$omit'}
+            var results = q2m("$omit=b", {keywords: altKeywords})
+            assert.ok(results.options)
+            assert.deepEqual(results.options, {fields: {b:0}})
+        })
+        it("should create sort option", function () {
+            var altKeywords = {fields:'$fields', offset:'$offset', limit:'$limit', sort: '$sort', omit: '$omit'}
+            var results = q2m("$sort=a,+b,-c", {keywords: altKeywords})
+            assert.ok(results.options)
+            assert.deepEqual(results.options, {sort: {a:1, b:1, c:-1}})
+        })
+        it("should limit queries", function () {
+            var altKeywords = {fields:'$fields', offset:'$offset', limit:'$limit', sort: '$sort', omit: '$omit'}
+            var results = q2m("$limit=100", {maxLimit: 50, keywords: altKeywords})
             assert.ok(results.options)
             assert.deepEqual(results.options, {limit: 50})
         })

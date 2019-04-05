@@ -59,8 +59,9 @@ console.log(query)
 
 #### options:
 * **maxLimit** The maximum limit (default is none)
-* **ignore** List of criteria to ignore in addition to those used for query options ("fields", "sort", "offset", "limit")
+* **ignore** List of criteria to ignore in addition to keywords used for query options ("fields", "omit", "sort", "offset", "limit")
 * **parser** Query parser to use instead of _querystring_. Must implement `parse(string)` and `stringify(obj)`.
+* **keywords** Override the keywords used for query options ("fields", "omit", "sort", "offset", "limit"). For example: `{fields:'$fields', omit:'$omit', sort:'$sort', offset:'$offset', limit:'$limit'}`
 
 #### returns:
 * **criteria** Mongo query criteria.
@@ -137,7 +138,7 @@ For example, if _offset_ was 20, _limit_ was 10, and _count_ was 95, the followi
 These pagination links can be used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
 
 ### Filtering
-Any query parameters other then _fields_, _omit_, _sort_, _offset_, and _limit_ are interpreted as query criteria. For example `name=john&age>21` results in a _criteria_ value of:
+Any query parameters other then the keywords _fields_, _omit_, _sort_, _offset_, and _limit_ are interpreted as query criteria. For example `name=john&age>21` results in a _criteria_ value of:
 
 ```
 {
@@ -163,6 +164,31 @@ Any query parameters other then _fields_, _omit_, _sort_, _offset_, and _limit_ 
 Comparisons on embedded documents should use mongo's [dot notation](http://docs.mongodb.org/manual/reference/glossary/#term-dot-notation) instead of express's 'extended' [query parser](https://www.npmjs.com/package/qs) (Use `foo.bar=value` instead of `foo[bar]=value`).
 
 Although exact matches are handled for either method, comparisons (such as `foo[bar]!=value`) are not supported because the 'extended' parser expects an equals sign after the nested object reference; if it's not an equals the remainder is discarded.
+
+### A note on overriding keywords
+You can adjust the keywords (_fields_, _omit_, _sort_, _offset_, and _limit_) by providing an alternate set as an option. For example:
+
+```
+altKeywords = {fields:'$fields', omit:'$omit', sort:'$sort', offset:'$offset', limit:'$limit'}
+var q = q2m(res.query, {keywords: altKeywords});
+```
+
+This will then interpret the standard keywords as query parameters instead of options. For example a query of `age>21&omit=false&$omit=a` results in a _criteria_ value of:
+
+```
+{
+  'age': { $gt: 21 },
+  'omit': false
+}
+```
+
+and an _option_ value of:
+
+```
+q.option = {
+  fields: { a: false }
+}
+```
 
 ## Development
 There's a *test* script listed in package.json that will execute the mocha tests:
