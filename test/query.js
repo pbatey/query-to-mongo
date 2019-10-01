@@ -23,6 +23,11 @@ describe("query-to-mongo(query) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {r: /regex/, ri: /regexi/i})
         })
+        it("should create regex criteria with comma", function () {
+            var results = q2m("r=/reg,ex/&ri=/reg,exi/i")
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {r: /reg,ex/, ri: /reg,exi/i})
+        })
         it("should create Date criteria from YYYY-MM", function () {
             var results = q2m("d=2010-04")
             assert.ok(results.criteria)
