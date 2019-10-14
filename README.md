@@ -12,7 +12,7 @@ For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&o
   options: {
     fields: { name: true, age: true },
     sort: { name: 1, age: -1 },
-    offset: 10,
+    skip: 10,
     limit: 10
   }
 }
@@ -61,7 +61,7 @@ console.log(query)
 * **maxLimit** The maximum limit (default is none)
 * **ignore** List of criteria to ignore in addition to keywords used for query options ("fields", "omit", "sort", "offset", "limit")
 * **parser** Query parser to use instead of _querystring_. Must implement `parse(string)` and `stringify(obj)`.
-* **keywords** Override the keywords used for query options ("fields", "omit", "sort", "offset", "limit"). For example: `{fields:'$fields', omit:'$omit', sort:'$sort', offset:'$offset', limit:'$limit'}`
+* **keywords** Override the keywords used for query options ("fields", "omit", "sort", "skip", "limit"). For example: `{fields:'$fields', omit:'$omit', sort:'$sort', offset:'$skip', limit:'$limit'}`
 
 #### returns:
 * **criteria** Mongo query criteria.
