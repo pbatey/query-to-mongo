@@ -1,5 +1,6 @@
 var querystring = require('querystring')
 var iso8601 = require('./lib/iso8601-regex')
+var ObjectId = require("bson").ObjectId;
 
 // Convert comma separated list to a mongo projection.
 // for example f('field1,field2,field3') -> {field1:true,field2:true,field3:true}
@@ -7,7 +8,7 @@ function fieldsToMongo(fields) {
     if (!fields) return null
     var hash = {}
     fields.split(',').forEach(function(field) {
-        hash[field.trim()] = 1
+        hash[field.trim()] = true
     })
     return hash
 }
@@ -18,7 +19,7 @@ function omitFieldsToMongo(omitFields) {
     if (!omitFields) return null
     var hash = {}
     omitFields.split(',').forEach(function(omitField) {
-        hash[omitField.trim()] = 0
+        hash[omitField.trim()] = false
     })
     return hash
 }
@@ -36,9 +37,8 @@ function sortToMongo(sort) {
     return hash
 }
 
-// Convert String to Number, Date, or Boolean if possible. Also strips ! prefix
+// Convert String to Number, Date, or Boolean if possible
 function typedValue(value) {
-  if (value[0] == '!') value = value.substr(1)
   var regex = value.match(/^\/(.*)\/(i?)$/);
   var quotedString = value.match(/(["'])(?:\\\1|.)*?\1/);
 
@@ -60,9 +60,9 @@ function typedValue(value) {
 }
 
 // Convert a comma separated string value to an array of values.  Commas
-// in a quoted strings and regexes are ignored.  Also strips ! prefix from values.
+// in a quoted string are ignored.
 function typedValues(svalue) {
-    var commaSplit = /("[^"]*")|('[^']*')|(\/[^\/]*\/i?)|([^,]+)/g
+    var commaSplit = /("[^"]*")|('[^']*')|([^,]+)/g
     var values = []
     svalue
         .match(commaSplit)
@@ -80,10 +80,9 @@ function typedValues(svalue) {
 // + f('key') => {key:'key',value:{$exists: true}}
 // + f('!key') => {key:'key',value:{$exists: false}}
 // + f('key:op','value') => {key: 'key', value:{ $op: value}}
-// + f('key','op:value') => {key: 'key', value:{ $op: value}}
 function comparisonToMongo(key, value) {
     var join = (value == '') ? key : key.concat('=', value)
-    var parts = join.match(/^(!?[^><!=:]+)(?:=?([><]=?|!?=|:.+=)(.+))?$/)
+    var parts = join.match(/^(!?[^><!=:]+)(?:([><]=?|!?=|:.+=)(.+))?$/)
     var op, hash = {}
     if (!parts) return null
 
@@ -96,25 +95,14 @@ function comparisonToMongo(key, value) {
             key = key.substr(1)
             value = { '$exists': false }
         }
-    } else if (op == '=' && parts[3] == '!') {
-        value = { '$exists': false }
     } else if (op == '=' || op == '!=') {
-        if ( op == '=' && parts[3][0] == '!' ) op = '!='
         var array = typedValues(parts[3]);
         if (array.length > 1) {
             value = {}
             op = (op == '=') ? '$in' : '$nin'
             value[op] = array
         } else if (op == '!=') {
-            value = array[0] instanceof RegExp ?
-                { '$not': array[0] } :
-                { '$ne': array[0] }
-        } else if (array[0][0] == '!') {
-            var sValue = array[0].substr(1)
-            var regex = sValue.match(/^\/(.*)\/(i?)$/) 
-            value = regex ?
-                { '$not': new RegExp(regex[1], regex[2]) } :
-                { '$ne': sValue }
+            value = { '$ne': array[0] }
         } else {
             value = array[0]
         }
@@ -153,7 +141,6 @@ function hasOrdinalKeys(obj) {
 function queryCriteriaToMongo(query, options) {
     var hash = {}, p, v, deep
     options = options || {}
-
     for (var key in query) {
         if (Object.prototype.hasOwnProperty.call(query, key) && (!options.ignore || options.ignore.indexOf(key) == -1)) {
             deep = (typeof query[key] === 'object' && !hasOrdinalKeys(query[key]))
@@ -169,7 +156,10 @@ function queryCriteriaToMongo(query, options) {
 
             if (p) {
                 if (!hash[p.key]) {
-                    hash[p.key] = p.value;
+                    if(query[key].startsWith("ObjectID"))
+                        hash[p.key] = new ObjectId(p .value);
+                    else
+                        hash[p.key] = p .value;
                 } else {
                     hash[p.key] = Object.assign(hash[p.key], p.value);
                 }
@@ -183,9 +173,9 @@ function queryCriteriaToMongo(query, options) {
 // for example {fields:'a,b',offset:8,limit:16} becomes {fields:{a:true,b:true},skip:8,limit:16}
 function queryOptionsToMongo(query, options) {
     var hash = {},
-        fields = fieldsToMongo(query[options.keywords.fields]),
-        omitFields = omitFieldsToMongo(query[options.keywords.omit]),
-        sort = sortToMongo(query[options.keywords.sort]),
+        fields = fieldsToMongo(query.fields),
+        omitFields = omitFieldsToMongo(query.omit),
+        sort = sortToMongo(query.sort),
         maxLimit = options.maxLimit || 9007199254740992,
         limit = options.maxLimit || 0
 
@@ -195,8 +185,8 @@ function queryOptionsToMongo(query, options) {
     if (omitFields) hash.fields = omitFields
     if (sort) hash.sort = sort
 
-    if (query[options.keywords.offset]) hash.skip = Number(query[options.keywords.offset])
-    if (query[options.keywords.limit]) limit = Math.min(Number(query[options.keywords.limit]), maxLimit)
+    if (query.offset) hash.skip = Number(query.offset)
+    if (query.limit) limit = Math.min(Number(query.limit), maxLimit)
     if (limit) {
         hash.limit = limit
     } else if (options.maxLimit) {
@@ -209,18 +199,13 @@ function queryOptionsToMongo(query, options) {
 module.exports = function(query, options) {
     query = query || {};
     options = options || {}
-    options.keywords = options.keywords || {}
-
-    defaultKeywords = {fields:'fields', omit:'omit', sort:'sort', offset:'offset', limit:'limit'}
-    options.keywords = Object.assign(defaultKeywords, options.keywords)
-    ignoreKeywords = [options.keywords.fields, options.keywords.omit, options.keywords.sort, options.keywords.offset, options.keywords.limit]
 
     if (!options.ignore) {
         options.ignore = []
     } else {
         options.ignore = (typeof options.ignore === 'string') ? [options.ignore] : options.ignore
     }
-    options.ignore = options.ignore.concat(ignoreKeywords)
+    options.ignore = options.ignore.concat(['fields', 'omit', 'sort', 'offset', 'limit'])
     if (!options.parser) options.parser = querystring
 
     if (typeof query === 'string') query = options.parser.parse(query)
@@ -240,18 +225,18 @@ module.exports = function(query, options) {
             options = options || {}
 
             if (offset > 0) {
-                query[options.keywords.offset] = Math.max(offset - limit, 0)
+                query.offset = Math.max(offset - limit, 0)
                 links['prev'] = url + '?' + options.parser.stringify(query)
-                query[options.keywords.offset] = 0
+                query.offset = 0
                 links['first'] = url + '?' + options.parser.stringify(query)
             }
             if (offset + limit < totalCount) {
                 last.pages = Math.ceil(totalCount / limit)
                 last.offset = (last.pages - 1) * limit
 
-                query[options.keywords.offset] = Math.min(offset + limit, last.offset)
+                query.offset = Math.min(offset + limit, last.offset)
                 links['next'] = url  + '?' + options.parser.stringify(query)
-                query[options.keywords.offset] = last.offset
+                query.offset = last.offset
                 links['last'] = url  + '?' + options.parser.stringify(query)
             }
             return links
