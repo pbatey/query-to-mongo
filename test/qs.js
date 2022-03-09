@@ -14,6 +14,11 @@ describe("query-to-mongo(query,{paser: qs}) =>", function () {
             assert.ok(results.criteria)
             assert.deepEqual(results.criteria, {foo:{"i": 10, "f": 1.2, "z": 0}})
         })
+        it("should not create numeric criteria", function () {
+            var results = q2m("foo=5e8454301455190020332048", {parser: qs})
+            assert.ok(results.criteria)
+            assert.deepEqual(results.criteria, {foo: "5e8454301455190020332048"})
+        })
         it("should create boolean criteria", function () {
             var results = q2m("foo[t]=true&foo[f]=false", {parser: qs})
             assert.ok(results.criteria)

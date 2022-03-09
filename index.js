@@ -52,7 +52,7 @@ function typedValue(value) {
     return false;
   } else if (iso8601.test(value) && value.length !== 4) {
     return new Date(value);
-  } else if (!isNaN(Number(value))) {
+  } else if (isFinite(Number(value))) {
     return Number(value);
   }
 
