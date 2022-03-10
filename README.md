@@ -12,7 +12,7 @@ For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&o
   options: {
     fields: { name: true, age: true },
     sort: { name: 1, age: -1 },
-    offset: 10,
+    skip: 10,
     limit: 10
   }
 }
