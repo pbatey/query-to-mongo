@@ -1,5 +1,5 @@
 # query-to-mongo
-Node.js package to convert query parameters into a [mongo](https://www.mongodb.org) query criteria and options
+Node.js package to convert URL query parameters into a [mongo](https://www.mongodb.org) query criteria and options
 
 For example, a query such as: `name=john&age>21&fields=name,age&sort=name,-age&offset=10&limit=10` becomes the following hash:
 
