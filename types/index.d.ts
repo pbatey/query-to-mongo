@@ -15,6 +15,8 @@ declare module 'query-to-mongo' {
     link: Function
   }
 
-  export function queryToMongo<T>(query: T, options?: QueryToMongoOptions): QueryToMongoResult<T>;
+  function queryToMongo<T>(query: T, options?: QueryToMongoOptions): QueryToMongoResult<T>;
+
+  export = queryToMongo;
   
 }
