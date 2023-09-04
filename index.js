@@ -62,7 +62,7 @@ function typedValue(value) {
 // Convert a comma separated string value to an array of values.  Commas
 // in a quoted strings and regexes are ignored.  Also strips ! prefix from values.
 function typedValues(svalue) {
-    var commaSplit = /("[^"]*")|('[^']*')|(\/[^\/]*\/i?)|([^,]+)/g
+    var commaSplit = /("[^"]*")|('[^']*')|(\/[^/]*\/i?)|([^,]+)/g
     var values = []
     svalue
         .match(commaSplit)
@@ -120,7 +120,7 @@ function comparisonToMongo(key, value) {
         }
     } else if (op[0] == ':' && op[op.length - 1] == '=') {
         op = '$' + op.substr(1, op.length - 2)
-        var array = []
+        let array = []
         parts[3].split(',').forEach(function(value) {
             array.push(typedValue(value))
         })
@@ -151,7 +151,7 @@ function hasOrdinalKeys(obj) {
 // Convert query parameters to a mongo query criteria.
 // for example {field1:"red","field2>2":""} becomes {field1:"red",field2:{$gt:2}}
 function queryCriteriaToMongo(query, options) {
-    var hash = {}, p, v, deep
+    var hash = {}, p, deep
     options = options || {}
 
     for (var key in query) {
@@ -211,9 +211,9 @@ module.exports = function(query, options) {
     options = options || {}
     options.keywords = options.keywords || {}
 
-    defaultKeywords = {fields:'fields', omit:'omit', sort:'sort', offset:'offset', limit:'limit'}
+    const defaultKeywords = {fields:'fields', omit:'omit', sort:'sort', offset:'offset', limit:'limit'}
     options.keywords = Object.assign(defaultKeywords, options.keywords)
-    ignoreKeywords = [options.keywords.fields, options.keywords.omit, options.keywords.sort, options.keywords.offset, options.keywords.limit]
+    const ignoreKeywords = [options.keywords.fields, options.keywords.omit, options.keywords.sort, options.keywords.offset, options.keywords.limit]
 
     if (!options.ignore) {
         options.ignore = []
