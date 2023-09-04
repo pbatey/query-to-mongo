@@ -205,8 +205,19 @@ npm test
 * Bitwise comparisions
 * Escaping or double quoting in forced string comparison, ='That\'s all folks' or ='That''s all folks'
 
-Creating a Release
-------------------
+Creating a Release with the Github Action
+-----------------------------------------
+
+1. Ensure updates are listed in CHANGLOG.md in the `[Unreleased]` section.
+   Once you trigger a new release, unreleased changes are automatically moved under the new version heading.
+
+2. Navigate to [Actions](https://github.com/pbatey/query-to-mongo/actions) and run the **Release package**
+   workflow.
+
+or...
+
+Creating a Release Manually
+---------------------------
 
 1. Ensure all unit tests pass with `npm test`
 2. Use `npm version major|minor|patch` to increment the version in _package.json_ and tag the release
