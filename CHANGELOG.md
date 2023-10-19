@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.11.3 - 2023-10-19
 ### Changed
-- dependabot bump @babel/travers to 7.23.2
+- dependabot bump @babel/traverse to 7.23.2
 
 ## 0.11.2 - 2023-09-04
 ### Added
