@@ -69,7 +69,7 @@ console.log(query)
 * **links** Function to calculate relative links.
 
 ##### links(url, totalCount)
-Calculate relative links given the base url and totalCount. Can be used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
+Calculate relative links given the base url and totalCount. Can be used to populate the [express response links](http://expressjs.com/en/4x/api.html#res.links).
 
 ```javascript
 var queryToMongo = require('query-to-mongo')
@@ -135,7 +135,7 @@ For example, if _offset_ was 20, _limit_ was 10, and _count_ was 95, the followi
 }
 ```
 
-These pagination links can be used to populate the [express response links](http://expressjs.com/4x/api.html#res.links).
+These pagination links can be used to populate the [express response links](http://expressjs.com/en/4x/api.html#res.links).
 
 ### Filtering
 Any query parameters other then the keywords _fields_, _omit_, _sort_, _offset_, and _limit_ are interpreted as query criteria. For example `name=john&age>21` results in a _criteria_ value of:
