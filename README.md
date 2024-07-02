@@ -219,25 +219,20 @@ or...
 Creating a Release Manually
 ---------------------------
 
-1. Ensure all unit tests pass with `npm test`
-2. Use `npm version major|minor|patch` to increment the version in _package.json_ and tag the release
-3. Push the tags `git push origin master --tags`
-4. Publish the release `npm publish ./`
+1. Update CHANGELOG.md by moving any changes in the `[Unreleased]` section to a
+   new release section
 
-### Major Release
+   ```
+   ## Unreleased
 
-    npm version major
-    git push origin master --tags
-    npm publish ./
+   ## 0.1.0 - 2024-07-02
+   ### Added
+   - Initial Version
+   ```
 
-### Minor Release (backwards compatible changes)
+   And commit it with `git add CHANGELOG.md && git commit -m 'chore: Update CHANGELOG.md`
 
-    npm version minor
-    git push origin master --tags
-    npm publish ./
-
-### Patch Release (bug fix)
-
-    npm version patch
-    git push origin master --tags
-    npm publish ./
+2. Ensure all unit tests pass with `npm test`
+3. Use `npm version major|minor|patch` to increment the version in _package.json_ and tag the release
+4. Push the tags `git push origin master --tags`
+5. Publish the release `npm publish ./`
