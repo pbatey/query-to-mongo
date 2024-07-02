@@ -10,6 +10,19 @@ Creating a Release with the Github Action
 2. Navigate to [Actions](https://github.com/pbatey/query-to-mongo/actions) and run the **Release package**
    workflow.
 
+   or, trigger the Release from the command line
+
+   ```
+   brew install gh
+   gh auth login
+   gh workflow run "Release package" -f release-type=minor
+   ```
+
+   > ***Note***: Valid release types are:
+   > - patch, minor, major, prepatch, preminor, premajor, and prerelease
+   >
+   > Pre-releases are tagged with '-beta.N', where N is incremented.
+
 or...
 
 Creating a Release Manually
