@@ -3,6 +3,7 @@ declare module 'query-to-mongo' {
     maxLimit?: string | number
     ignore?: 'fields' | 'omit' | 'sort' | 'offset' | 'limit'
     parser?: object
+    keywords?: { [keyword: 'fields' | 'omit' | 'sort' | 'offset' | 'limit']: string }
   }
 
   interface QueryToMongoResult<T> {
