@@ -1,3 +1,4 @@
+import type { Sort } from 'mongodb';
 declare module 'query-to-mongo' {
   interface QueryToMongoOptions {
     maxLimit?: string | number
@@ -12,7 +13,7 @@ declare module 'query-to-mongo' {
       fields?: { [field: string]: true },
       limit?: number,
       skip?: number,
-      sort?: object
+      sort?: Sort
     };
     link: Function
   }
