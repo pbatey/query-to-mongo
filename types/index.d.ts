@@ -9,6 +9,7 @@ declare module 'query-to-mongo' {
   interface QueryToMongoResult<T> {
     criteria: Omit<T, 'limit' | 'offset' | 'sort'>;
     options: {
+      fields?: { [field: string]: true },
       limit?: number,
       skip?: number,
       sort?: object
