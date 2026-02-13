@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 0.12.2 - 2026-02-13
+### Changed
+- dependabot bump qs to 6.11.2 to 6.14.2
+- dependabot bump js-yaml to 3.14.1 to 3.14.2
+
 ## 0.12.1 - 2024-09-24
 ### Fixed
 - added typescript for fields
