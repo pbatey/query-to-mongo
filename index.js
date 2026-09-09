@@ -1,6 +1,10 @@
 var querystring = require('querystring')
 var iso8601 = require('./lib/iso8601-regex')
 
+// Field names that must never be used as an object key, because writing
+// through them mutates Object.prototype for the whole process.
+var FORBIDDEN_KEYS = ['__proto__', 'constructor', 'prototype']
+
 // Convert comma separated list to a mongo projection.
 // for example f('field1,field2,field3') -> {field1:true,field2:true,field3:true}
 function fieldsToMongo(fields) {
@@ -155,6 +159,10 @@ function queryCriteriaToMongo(query, options) {
     options = options || {}
 
     for (var key in query) {
+        // Keys that walk into Object.prototype are always skipped: assigning to
+        // hash['__proto__'] writes through the prototype getter and mutates
+        // Object.prototype for the whole process (prototype pollution).
+        if (FORBIDDEN_KEYS.indexOf(key) !== -1) continue
         if (Object.prototype.hasOwnProperty.call(query, key) && (!options.ignore || options.ignore.indexOf(key) == -1)) {
             deep = (typeof query[key] === 'object' && !hasOrdinalKeys(query[key]))
 
