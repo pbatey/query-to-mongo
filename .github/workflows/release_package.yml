@@ -81,8 +81,12 @@ jobs:
           git tag ${{ env.NEW_VERSION }}
 
       # Publish version to public repository via npm Trusted Publishing (OIDC, no token needed)
+      # NODE_AUTH_TOKEN must be explicitly empty, or actions/setup-node's unresolved
+      # ${NODE_AUTH_TOKEN} placeholder in .npmrc breaks the OIDC auth path
       - name: Publish
         run: npm publish --access public --tag ${{ env.RELEASE_TAG }} --provenance
+        env:
+          NODE_AUTH_TOKEN: ''
 
       # Push repository changes
       - name: Push changes to repository
