@@ -23,6 +23,18 @@ Creating a Release with the Github Action
    >
    > Pre-releases are tagged with '-beta.N', where N is incremented.
 
+3. The workflow stages the release on npm (via trusted publishing / OIDC) but does not
+   make it live. Approve the staged package to publish it:
+
+   ```
+   npm stage list query-to-mongo
+   npm stage approve <stage-id>
+   ```
+
+   or approve it from the **Staged Packages** tab on the
+   [package's npmjs.com page](https://www.npmjs.com/package/query-to-mongo). Approval
+   requires 2FA.
+
 or...
 
 Creating a Release Manually
