@@ -6,7 +6,7 @@
   "types": "types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "http://github.com/pbatey/query-to-mongo"
+    "url": "git+https://github.com/pbatey/query-to-mongo.git"
   },
   "author": "Phil Batey <pbatey@gmail.com>",
   "license": "MIT",
