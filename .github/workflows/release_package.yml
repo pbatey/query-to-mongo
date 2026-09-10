@@ -80,14 +80,11 @@ jobs:
           git commit -m "chore: release ${{ env.NEW_VERSION }}"
           git tag ${{ env.NEW_VERSION }}
 
-      # Stage the release via npm Trusted Publishing (OIDC, no token needed).
-      # A maintainer must separately approve the staged package (2FA required)
-      # via `npm stage approve <stage-id>` or the "Staged Packages" tab on
-      # npmjs.com before it actually becomes installable.
+      # Publish version to public repository via npm Trusted Publishing (OIDC, no token needed)
       # NODE_AUTH_TOKEN must be explicitly empty, or actions/setup-node's unresolved
       # ${NODE_AUTH_TOKEN} placeholder in .npmrc breaks the OIDC auth path
-      - name: Stage publish
-        run: npm stage publish --access public --tag ${{ env.RELEASE_TAG }} --provenance
+      - name: Publish
+        run: npm publish --access public --tag ${{ env.RELEASE_TAG }} --provenance
         env:
           NODE_AUTH_TOKEN: ''
 
