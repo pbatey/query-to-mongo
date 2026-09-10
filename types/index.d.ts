@@ -15,7 +15,7 @@ declare module 'query-to-mongo' {
       skip?: number,
       sort?: Sort
     };
-    link: Function
+    links: Function
   }
 
   function queryToMongo<T>(query: T, options?: QueryToMongoOptions): QueryToMongoResult<T>;
